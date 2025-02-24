@@ -1,90 +1,66 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def gramian(p,q):
-    gram_matrix = np.array([[p@p, p@q], [p@q, q@q]])
-    return np.linalg.det(gram_matrix)
+def grad_triangle(triangles):
+
+    # Extract the lists of sides p,r,q for each face
+    # e.g. for p we want for every face (triangle), the first corner, for every coordinate
+    p, r, q = triangles[:, 0, :], triangles[:, 1, :], triangles[:, 2, :] # each of shape (F,n)
+    
+    pr = r-p # shape (F, n)
+    pq = q-p # shape (F, n)
+
+    # pointwise mutliply matrices, resulting matrix has rows which when summed correpsond to the dot for sides of a triangle
+    pr_dot_pr  = np.sum(pr*pr, axis=1) # shape (F)
+    pq_dot_pr = np.sum(pr*pq, axis=1) # shape (F)
+    pq_dot_pq = np.sum(pq*pq, axis=1) # shape (F)
+    areas = 0.5*np.sqrt(pr_dot_pr * pq_dot_pq - pq_dot_pr**2) # shape (F)
+
+    '''
+    pr_dot_pr[:, None] broadcasts [p1.r1, ..., pF.rF] to [[p1.r1]*n, ..., [pF.rF]*n]] so that 
+    pr_dot_pr[:, None]*pq gives [(p1-q1)*pr_dot_pr1,..., (pF-qF)*pr_dot_prF] via pointwise mult.
+    '''
+    # e.g. grad_ps[i] stores grad of area of triangles[i] wrt p for i=1,...,no. faces 
+    grad_ps = -( pr_dot_pr[:, None]*pq + pq_dot_pq[:, None]*pr + pq_dot_pr[:, None]*(pr+pq) ) / ( 4 * areas[:, None]) # shape (F,n)
+    grad_qs = ( pr_dot_pr[:, None]*pq - pq_dot_pr[:,None]*pr ) / ( 4 * areas[:, None]) # shape (F,n)
+    grad_rs =  ( pr_dot_pr[:, None]*pr - pq_dot_pr[:,None]*pq ) / ( 4 * areas[:, None]) # shape (F,n)
+
+    # We want all_grads[i] to be the matrix [grad_ps[i], grad_qs[i], grad_rs[i]]
+    all_grads =  np.stack([grad_ps, grad_qs, grad_rs], axis=1) # Shape (F,3,n)
+    return all_grads
 
 class Mesh():
     def __init__(self, vertex_list, edge_list, face_list):
-        self.vertex_list = vertex_list
+        '''
+        Arguments:
+        vertex_list: (np.ndarray shape (V,n)) V points in n-d for points of mesh
+        edge_list: (np.ndarray shape (E,2)) E edges represented by pairs of vertex indices
+        face_list: (np.ndarray shape (F,3)) F faces represented by triples of vertex indices
+        '''
+        self.vertex_list = vertex_list.astype(np.float64)
         self.edge_list = edge_list
         self.face_list = face_list
-    
-    
-class Triangle():
-    def __init__(self, v1, v2, v3):
-        self.v1 = v1
-        self.v2 = v2
-        self.v3 = v3
-        self.side1 = v1-v2
-        self.side2 = v1-v3
-        self.area = 0.5*np.sqrt(gramian(self.side1,self.side2))
-        self.grad_v1 = (1/ (4*self.area) )*( np.linalg.norm(self.v1-self.v3,2)*( self.v1-self.v2 ) + 
-                                        np.linalg.norm(self.v1-self.v2,2)*( self.v1-self.v3 ) -
-                                        (self.v1-self.v2)@(self.v1-self.v3)*(2*self.v1-self.v2-self.v3)
-                                    )
-        self.grad_v2 = (1/ (4*self.area) )*( np.linalg.norm(self.v1-self.v3,2)*( self.v2-self.v1 ) +
-                                        (self.v1-self.v2)@(self.v1-self.v3)*(self.v1-self.v3)
-                                    )
-        self.grad_v3 = (1/ (4*self.area) )*( np.linalg.norm(self.v1-self.v3,2)*( self.v3-self.v1 ) +
-                                        (self.v1-self.v2)@(self.v1-self.v3)*(self.v1-self.v2)
-                                    )
-    
-    def plot_2d(self):
-        fig, ax = plt.subplots()
-        vertices = np.vstack([self.v1, self.v2, self.v3, self.v1])
-        ax.plot(vertices[:, 0], vertices[:, 1], 'k-', lw=2)
-        ax.scatter(vertices[:-1, 0], vertices[:-1, 1], c='k')
-        # Plot the gradient vectors using quiver (with different colors for clarity)
-        
-        ax.quiver(self.v1[0], self.v1[1], self.grad_v1[0], self.grad_v1[1],
-              color='r', angles='xy', scale_units='xy', scale=1, label='grad v1')
-        ax.quiver(self.v2[0], self.v2[1], self.grad_v2[0], self.grad_v2[1],
-              color='g', angles='xy', scale_units='xy', scale=1, label='grad v2')
-        ax.quiver(self.v3[0], self.v3[1], self.grad_v3[0], self.grad_v3[1],
-              color='b', angles='xy', scale_units='xy', scale=1, label='grad v3')
-    
-        ax.set_aspect('equal')
-        ax.set_title("2D Triangle and Area Gradients")
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.grid(True)
-        plt.legend()
-        plt.show()
+        self.grads_list = np.zeros_like(vertex_list, dtype=np.float64)
 
-    def plot_3d(self):
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-    
-        # Collect vertices in order and close the loop
-        vertices = np.vstack([self.v1, self.v2, self.v3, self.v1])
-        ax.plot(vertices[:, 0], vertices[:, 1], vertices[:, 2], 'k-', lw=2)
-        ax.scatter(vertices[:-1, 0], vertices[:-1, 1], vertices[:-1, 2], c='k')
-        
-        # For 3D plotting, remove the extra keyword arguments
-        ax.quiver(self.v1[0], self.v1[1], self.v1[2],
-                  self.grad_v1[0], self.grad_v1[1], self.grad_v1[2],
-                  color='r', label='grad v1')
-        ax.quiver(self.v2[0], self.v2[1], self.v2[2],
-                  self.grad_v2[0], self.grad_v2[1], self.grad_v2[2],
-                  color='g', label='grad v2')
-        ax.quiver(self.v3[0], self.v3[1], self.v3[2],
-                  self.grad_v3[0], self.grad_v3[1], self.grad_v3[2],
-                  color='b', label='grad v3')
-    
-        # Setting equal aspect ratio in 3D is more involved.
-        # For simplicity, we'll skip it here.
-        ax.set_title("3D Triangle and Area Gradients")
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_zlabel("Z")
-        plt.legend()
-        plt.show()
+    def compute_mesh_grads(self):
+        # use face list as a mask to get all triples of nd coords characterising each of F triangles
+        triangles = self.vertex_list[self.face_list] # triangles of shape (F,3,n)
 
+        # use vectorised grad_triangle function to compute for each of F triangles, the 3 nd grad vectors 
+        grads_unaggregated = grad_triangle(triangles)
 
-        
-triangle_1 = Triangle(np.array([0,0,0]),np.array([1,0,0]),np.array([0,1,0]))
-print(triangle_1.area) 
-triangle_1.plot_3d()
+        # np.add.at(self.grads_list, face[i], grads[i]) will add in positions face[i] of grad list grads[i]
+        # since a vectorised function works for a list of face[i]s and a list of grad[i]s
+        np.add.at(self.grads_list, self.face_list, grads_unaggregated)
+
+    
+    
+
+mesh_grid1 = np.array([[0,0,0],[1,0,0],[0,1,0], [0,0,1]])
+edge_list1 = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
+face_list1 = np.array([[0,1,2], [0,1,3], [0,2,3], [1,2,3]])
+
+mesh1 = Mesh(mesh_grid1, edge_list1, face_list1)
+mesh1.compute_mesh_grads()
+print(mesh1.grads_list)
 
