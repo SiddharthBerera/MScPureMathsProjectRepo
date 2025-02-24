@@ -1,6 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Ignore in this file, redundant method for computing triangle area in 
+# surface.py however might recinclude at later stage to impore modularity
+def triangle_area_method2(triangle):
+    # extract the lists of sides p,r,q for each face
+    p, r, q = triangle[:, 0, :], triangle[:, 1, :], triangle[:, 2, :] # each of shape (F,n)
+    rp = r-p
+    qp = q-p
+    # pointwise mutliply matrices, resulting matrix has rows which when summed correpsond to the dot for sides of a triangle
+    rp_dot_rp  = np.sum(rp*rp, axis=1) # shape (F)
+    rp_dot_qp = np.sum(rp*qp, axis=1) # shape (F)
+    qp_dot_qp = np.sum(qp*qp, axis=1) # shape (F)
+    area = 0.5*np.sqrt(rp_dot_rp * qp_dot_qp - qp_dot_qp**2) # shape (F)
+    return area
+
 def gramian(p,q):
     return ((p.T@p) * (q.T@q)) - ((q.T@p.T))**2
 
@@ -76,6 +90,10 @@ class Triangle():
 
 
       
-triangle_1 = Triangle(np.array([0,0,0]),np.array([1,0,0]),np.array([0,1,1]))
+triangle_1 = Triangle(np.array([0,0,0]),np.array([1,0,0]),np.array([0,1,0]))
+print(triangle_1.grad_v1)
+print(triangle_1.grad_v2)
+print(triangle_1.grad_v3)
 print(triangle_1.area) 
 triangle_1.plot_3d()
+ 
