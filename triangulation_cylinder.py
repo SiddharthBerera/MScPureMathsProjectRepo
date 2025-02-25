@@ -1,5 +1,3 @@
-# triangulation_cylinder.py
-
 import math
 
 def generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, height):

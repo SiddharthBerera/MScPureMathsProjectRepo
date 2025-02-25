@@ -1,5 +1,8 @@
 import numpy as np
+import math
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+
 
 class Mesh():
     def __init__(self, vertex_list, edge_list, face_list, border_list):
@@ -15,7 +18,7 @@ class Mesh():
         self.face_list = face_list
         self.border_list = border_list
         self.grads_list = np.zeros_like(vertex_list, dtype=np.float64)
-    
+
     @staticmethod
     def grad_triangle(triangles):
 
@@ -31,6 +34,7 @@ class Mesh():
         pq_dot_pr = np.sum(pr*pq, axis=1) # shape (F)
         pq_dot_pq = np.sum(pq*pq, axis=1) # shape (F)
         areas = 0.5*np.sqrt(pr_dot_pr * pq_dot_pq - pq_dot_pr**2) # shape (F)
+        #areas = np.maximum(areas, 1e-10) 
 
         '''
         pr_dot_pr[:, None] broadcasts [p1.r1, ..., pF.rF] to [[p1.r1]*n, ..., [pF.rF]*n]] so that 
@@ -55,21 +59,56 @@ class Mesh():
         # np.add.at(self.grads_list, face[i], grads[i]) will add in positions face[i] of grad list grads[i]
         # since a vectorised function works for a list of face[i]s and a list of grad[i]s
         np.add.at(self.grads_list, self.face_list, grads_unaggregated)
+
+        # ensure boundary stays fixed
         self.grads_list[self.border_list] = 0
 
     def gradient_descent(self, stepsize, iterations):
         for i in range(iterations):
+            self.compute_mesh_grads()
             self.vertex_list = self.vertex_list - stepsize*self.grads_list
 
+    def plot_surface(self):
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+
+        # Build a list of triangles (each a list of three vertex coordinates) for plotting.
+        triangles = self.vertex_list[self.face_list]
+        
+        # Plot the surface as a blue semi-transparent mesh.
+        poly_collection = Poly3DCollection(triangles, facecolors='blue', edgecolors='k', alpha=0.5)
+        ax.add_collection3d(poly_collection)
+        
+        # Plot the vertices as red points.
+        ax.scatter(self.vertex_list[:, 0], self.vertex_list[:, 1], self.vertex_list[:, 2],
+                color='red', s=50, label='Vertices')
+        
+        # Set axis limits with a little margin.
+        margin = 0.1
+        x_min, x_max = self.vertex_list[:, 0].min() - margin, self.vertex_list[:, 0].max() + margin
+        y_min, y_max = self.vertex_list[:, 1].min() - margin, self.vertex_list[:, 1].max() + margin
+        z_min, z_max = self.vertex_list[:, 2].min() - margin, self.vertex_list[:, 2].max() + margin
+        ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
+        ax.set_zlim(z_min, z_max)
+        
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z")
+        plt.title("Surface after Gradient Descent")
+        plt.legend()
+        plt.show()
+
     
     
+# --- Example usage ---
+if __name__ == "__main__":
+    mesh_grid1 = np.array([[0,0,0],[1,0,0],[0,1,0], [0,0,1]])
+    edge_list1 = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
+    face_list1 = np.array([[0,1,2], [0,1,3], [0,2,3], [1,2,3]])
+    fixed = np.array([True, False, False, False])
 
-mesh_grid1 = np.array([[0,0,0],[1,0,0],[0,1,0], [0,0,1]])
-edge_list1 = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
-face_list1 = np.array([[0,1,2], [0,1,3], [0,2,3], [1,2,3]])
-fixed = np.array([True, False, False, False])
-
-mesh1 = Mesh(mesh_grid1, edge_list1, face_list1, fixed)
-mesh1.compute_mesh_grads()
-print(mesh1.grads_list)
+    mesh1 = Mesh(mesh_grid1, edge_list1, face_list1, fixed)
+    mesh1.compute_mesh_grads()
+    print(mesh1.grads_list)
 
