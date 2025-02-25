@@ -90,7 +90,7 @@ class Triangle():
 
 
       
-triangle_1 = Triangle(np.array([0,0,0]),np.array([1,0,0]),np.array([0,1,0]))
+triangle_1 = Triangle(np.array([1,0,0]),np.array([0,1,0]),np.array([0,0,1]))
 print(triangle_1.grad_v1)
 print(triangle_1.grad_v2)
 print(triangle_1.grad_v3)
