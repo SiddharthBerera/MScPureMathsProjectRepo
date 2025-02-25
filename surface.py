@@ -17,7 +17,7 @@ class Mesh():
         self.edge_list = edge_list
         self.face_list = face_list
         self.border_list = border_list
-        self.grads_list = np.zeros_like(vertex_list, dtype=np.float64)
+        self.grads_list = np.zeros_like(vertex_list, dtype=np.float64) # Shape (V,n)
 
     @staticmethod
     def grad_triangle(triangles):
@@ -41,13 +41,16 @@ class Mesh():
         pr_dot_pr[:, None]*pq gives [(p1-q1)*pr_dot_pr1,..., (pF-qF)*pr_dot_prF] via pointwise mult.
         '''
         # e.g. grad_ps[i] stores grad of area of triangles[i] wrt p for i=1,...,no. faces 
-        grad_ps = -( pr_dot_pr[:, None]*pq + pq_dot_pq[:, None]*pr + pq_dot_pr[:, None]*(pr+pq) ) / ( 4 * areas[:, None]) # shape (F,n)
+        grad_ps = -( pr_dot_pr[:, None]*pq + pq_dot_pq[:, None]*pr - pq_dot_pr[:, None]*(pr+pq) ) / ( 4 * areas[:, None]) # shape (F,n)
         grad_qs = ( pr_dot_pr[:, None]*pq - pq_dot_pr[:,None]*pr ) / ( 4 * areas[:, None]) # shape (F,n)
         grad_rs =  ( pr_dot_pr[:, None]*pr - pq_dot_pr[:,None]*pq ) / ( 4 * areas[:, None]) # shape (F,n)
 
         # We want all_grads[i] to be the matrix [grad_ps[i], grad_qs[i], grad_rs[i]]
         all_grads =  np.stack([grad_ps, grad_qs, grad_rs], axis=1) # Shape (F,3,n)
         return all_grads
+    
+    def zero_grads(self):
+        self.grads_list[:,:] = 0
 
     def compute_mesh_grads(self):
         # use face list as a mask to get all triples of nd coords characterising each of F triangles
@@ -61,11 +64,15 @@ class Mesh():
         np.add.at(self.grads_list, self.face_list, grads_unaggregated)
 
         # ensure boundary stays fixed
-        self.grads_list[self.border_list] = 0
+        self.grads_list[self.border_list, :] = 0
 
     def gradient_descent(self, stepsize, iterations):
         for i in range(iterations):
+            # ensure we start with a zeroed grad list of 
+            self.zero_grads()
+            # compute the grads 
             self.compute_mesh_grads()
+            # perfrom the gradient descent step
             self.vertex_list = self.vertex_list - stepsize*self.grads_list
 
     def plot_surface(self):
@@ -79,9 +86,18 @@ class Mesh():
         poly_collection = Poly3DCollection(triangles, facecolors='blue', edgecolors='k', alpha=0.5)
         ax.add_collection3d(poly_collection)
         
-        # Plot the vertices as red points.
-        ax.scatter(self.vertex_list[:, 0], self.vertex_list[:, 1], self.vertex_list[:, 2],
-                color='red', s=50, label='Vertices')
+        # create a mask for differentiating between fixed and non-fixed points for plotting
+        mask_border = np.zeros(self.vertex_list.shape[0], dtype=bool)
+        mask_border[self.border_list] = True
+        mask_non_border = ~mask_border
+
+        # Plot the non-fixed vertices as red points
+        ax.scatter(self.vertex_list[mask_non_border, 0], self.vertex_list[mask_non_border, 1], 
+                   self.vertex_list[mask_non_border, 2], color='red', s=50, label='Vertices')
+        
+        # plot the fixed vertices as green points
+        ax.scatter(self.vertex_list[self.border_list, 0], self.vertex_list[self.border_list, 1],
+                   self.vertex_list[self.border_list, 2], color='green', s=50, label='Boundary')
         
         # Set axis limits with a little margin.
         margin = 0.1
