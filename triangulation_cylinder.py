@@ -66,7 +66,7 @@ def generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, he
     # Convert the set of edges to a sorted list.
     edges = [list(edge) for edge in sorted(edge_set)]
     
-    return vertices, faces, border, edges
+    return vertices, edges, faces, border
 
 # --- Example usage ---
 if __name__ == "__main__":
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     height_subdivisions = 5   # e.g., 5 subdivisions along the height.
     height = 5              # Cylinder height.
     
-    vertices, faces, border, edges = generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, height)
+    vertices, edges, faces, border  = generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, height)
     
     print("Vertices (first 5):")
     for i, v in enumerate(vertices[:5]):
