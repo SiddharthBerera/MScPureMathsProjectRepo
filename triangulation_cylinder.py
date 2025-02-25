@@ -18,15 +18,14 @@ def generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, he
                                    The first entry corresponds to vertex index 0.
         faces (list of lists): List of triangle faces, each specified as a list of 3 vertex indices.
                                The indices are 0-based.
-        border (list of int): List of vertex indices (0-based) on the boundary (i.e. bottom and top rows).
+        border (list of int): List of vertex indices (0-based) on the boundary (i.e., bottom and top rows).
+        edges (list of lists): List of unique edges, each specified as a sorted list [i, j] of vertex indices.
     """
-    # Assume a unit radius for the cylinder
     r = 1.0
     vertices = []
     
-    # Generate vertices: iterate over each height level and circular subdivision.
+    # Generate vertices for each height level and circular subdivision.
     for i in range(height_subdivisions):
-        # Evenly space z between 0 and height.
         z = height * i / (height_subdivisions - 1)
         for j in range(circle_subdivisions):
             theta = 2 * math.pi * j / circle_subdivisions
@@ -35,40 +34,51 @@ def generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, he
             vertices.append((x, y, z))
     
     faces = []
-    # Build the triangulation for each quad cell.
-    # Vertices are arranged in a grid: for each cell defined by height index i and circular index j.
+    # Create faces by splitting each quadrilateral cell into two triangles.
     for i in range(height_subdivisions - 1):
         for j in range(circle_subdivisions):
             next_j = (j + 1) % circle_subdivisions
 
-            # Compute the 0-based indices for the vertices:
             bottom_left  = i * circle_subdivisions + j
             bottom_right = i * circle_subdivisions + next_j
             top_left     = (i + 1) * circle_subdivisions + j
             top_right    = (i + 1) * circle_subdivisions + next_j
 
-            # Create two triangles for the quad cell.
             faces.append([bottom_left, top_left, top_right])
             faces.append([bottom_left, top_right, bottom_right])
     
-    # Determine the border vertices.
-    # The border corresponds to the bottom row (first height level) and the top row (last height level).
-    border = list(range(0, circle_subdivisions))  # Bottom row indices
-    border += list(range((height_subdivisions - 1) * circle_subdivisions, height_subdivisions * circle_subdivisions))  # Top row indices
+    # Determine the border vertices (bottom and top rows).
+    border = list(range(0, circle_subdivisions))  # Bottom row.
+    offset = (height_subdivisions - 1) * circle_subdivisions
+    border += list(range(offset, offset + circle_subdivisions))  # Top row.
     
-    return vertices, faces, border
+    # Build the edge list from the faces.
+    # For each face, add its three edges (as sorted tuples) to a set to avoid duplicates.
+    edge_set = set()
+    for face in faces:
+        # Each face is a list of three vertices: [v0, v1, v2]
+        edges_in_face = [(face[0], face[1]), (face[1], face[2]), (face[2], face[0])]
+        for edge in edges_in_face:
+            # Store the edge with the smaller index first.
+            sorted_edge = tuple(sorted(edge))
+            edge_set.add(sorted_edge)
+    
+    # Convert the set of edges to a sorted list.
+    edges = [list(edge) for edge in sorted(edge_set)]
+    
+    return vertices, faces, border, edges
 
 # --- Example usage ---
 if __name__ == "__main__":
-    circle_subdivisions = 4  # Number of subdivisions around the circle
-    height_subdivisions = 5   # Number of subdivisions along the height
-    height = 5.0            # Actual height of the cylinder
+    circle_subdivisions = 4  # e.g., 12 subdivisions around the circle.
+    height_subdivisions = 5   # e.g., 5 subdivisions along the height.
+    height = 5              # Cylinder height.
     
-    vertices, faces, border = generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, height)
+    vertices, faces, border, edges = generate_cylinder_triangulation(circle_subdivisions, height_subdivisions, height)
     
-    print("Vertices (first 5 shown):")
-    for idx, vertex in enumerate(vertices[:5]):
-        print(f"Index {idx}: {vertex}")
+    print("Vertices (first 5):")
+    for i, v in enumerate(vertices[:5]):
+        print(f"Vertex {i}: {v}")
     
     print("\nFirst 5 faces:")
     for face in faces[:5]:
@@ -76,3 +86,7 @@ if __name__ == "__main__":
     
     print("\nBorder vertex indices:")
     print(border)
+    
+    print("\nEdge list (first 10 edges):")
+    for edge in edges[:10]:
+        print(edge)
