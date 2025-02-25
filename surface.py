@@ -1,57 +1,65 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def grad_triangle(triangles):
-
-    # Extract the lists of sides p,r,q for each face
-    # e.g. for p we want for every face (triangle), the first corner, for every coordinate
-    p, r, q = triangles[:, 0, :], triangles[:, 1, :], triangles[:, 2, :] # each of shape (F,n)
-    
-    pr = r-p # shape (F, n)
-    pq = q-p # shape (F, n)
-
-    # pointwise mutliply matrices, resulting matrix has rows which when summed correpsond to the dot for sides of a triangle
-    pr_dot_pr  = np.sum(pr*pr, axis=1) # shape (F)
-    pq_dot_pr = np.sum(pr*pq, axis=1) # shape (F)
-    pq_dot_pq = np.sum(pq*pq, axis=1) # shape (F)
-    areas = 0.5*np.sqrt(pr_dot_pr * pq_dot_pq - pq_dot_pr**2) # shape (F)
-
-    '''
-    pr_dot_pr[:, None] broadcasts [p1.r1, ..., pF.rF] to [[p1.r1]*n, ..., [pF.rF]*n]] so that 
-    pr_dot_pr[:, None]*pq gives [(p1-q1)*pr_dot_pr1,..., (pF-qF)*pr_dot_prF] via pointwise mult.
-    '''
-    # e.g. grad_ps[i] stores grad of area of triangles[i] wrt p for i=1,...,no. faces 
-    grad_ps = -( pr_dot_pr[:, None]*pq + pq_dot_pq[:, None]*pr + pq_dot_pr[:, None]*(pr+pq) ) / ( 4 * areas[:, None]) # shape (F,n)
-    grad_qs = ( pr_dot_pr[:, None]*pq - pq_dot_pr[:,None]*pr ) / ( 4 * areas[:, None]) # shape (F,n)
-    grad_rs =  ( pr_dot_pr[:, None]*pr - pq_dot_pr[:,None]*pq ) / ( 4 * areas[:, None]) # shape (F,n)
-
-    # We want all_grads[i] to be the matrix [grad_ps[i], grad_qs[i], grad_rs[i]]
-    all_grads =  np.stack([grad_ps, grad_qs, grad_rs], axis=1) # Shape (F,3,n)
-    return all_grads
-
 class Mesh():
-    def __init__(self, vertex_list, edge_list, face_list):
+    def __init__(self, vertex_list, edge_list, face_list, border_list):
         '''
         Arguments:
         vertex_list: (np.ndarray shape (V,n)) V points in n-d for points of mesh
         edge_list: (np.ndarray shape (E,2)) E edges represented by pairs of vertex indices
         face_list: (np.ndarray shape (F,3)) F faces represented by triples of vertex indices
+        border_list: (np.array shape (V)) B indices correpsonding to fixed vertices in vertex_list
         '''
         self.vertex_list = vertex_list.astype(np.float64)
         self.edge_list = edge_list
         self.face_list = face_list
+        self.border_list = border_list
         self.grads_list = np.zeros_like(vertex_list, dtype=np.float64)
+    
+    @staticmethod
+    def grad_triangle(triangles):
+
+        # Extract the lists of sides p,r,q for each face
+        # e.g. for p we want for every face (triangle), the first corner, for every coordinate
+        p, r, q = triangles[:, 0, :], triangles[:, 1, :], triangles[:, 2, :] # each of shape (F,n)
+        
+        pr = r-p # shape (F, n)
+        pq = q-p # shape (F, n)
+
+        # pointwise mutliply matrices, resulting matrix has rows which when summed correpsond to the dot for sides of a triangle
+        pr_dot_pr  = np.sum(pr*pr, axis=1) # shape (F)
+        pq_dot_pr = np.sum(pr*pq, axis=1) # shape (F)
+        pq_dot_pq = np.sum(pq*pq, axis=1) # shape (F)
+        areas = 0.5*np.sqrt(pr_dot_pr * pq_dot_pq - pq_dot_pr**2) # shape (F)
+
+        '''
+        pr_dot_pr[:, None] broadcasts [p1.r1, ..., pF.rF] to [[p1.r1]*n, ..., [pF.rF]*n]] so that 
+        pr_dot_pr[:, None]*pq gives [(p1-q1)*pr_dot_pr1,..., (pF-qF)*pr_dot_prF] via pointwise mult.
+        '''
+        # e.g. grad_ps[i] stores grad of area of triangles[i] wrt p for i=1,...,no. faces 
+        grad_ps = -( pr_dot_pr[:, None]*pq + pq_dot_pq[:, None]*pr + pq_dot_pr[:, None]*(pr+pq) ) / ( 4 * areas[:, None]) # shape (F,n)
+        grad_qs = ( pr_dot_pr[:, None]*pq - pq_dot_pr[:,None]*pr ) / ( 4 * areas[:, None]) # shape (F,n)
+        grad_rs =  ( pr_dot_pr[:, None]*pr - pq_dot_pr[:,None]*pq ) / ( 4 * areas[:, None]) # shape (F,n)
+
+        # We want all_grads[i] to be the matrix [grad_ps[i], grad_qs[i], grad_rs[i]]
+        all_grads =  np.stack([grad_ps, grad_qs, grad_rs], axis=1) # Shape (F,3,n)
+        return all_grads
 
     def compute_mesh_grads(self):
         # use face list as a mask to get all triples of nd coords characterising each of F triangles
         triangles = self.vertex_list[self.face_list] # triangles of shape (F,3,n)
 
         # use vectorised grad_triangle function to compute for each of F triangles, the 3 nd grad vectors 
-        grads_unaggregated = grad_triangle(triangles)
+        grads_unaggregated = self.grad_triangle(triangles)
 
         # np.add.at(self.grads_list, face[i], grads[i]) will add in positions face[i] of grad list grads[i]
         # since a vectorised function works for a list of face[i]s and a list of grad[i]s
         np.add.at(self.grads_list, self.face_list, grads_unaggregated)
+        self.grads_list[self.border_list] = 0
+
+    def gradient_descent(self, stepsize, iterations):
+        for i in range(iterations):
+            self.vertex_list = self.vertex_list - stepsize*self.grads_list
 
     
     
@@ -59,8 +67,9 @@ class Mesh():
 mesh_grid1 = np.array([[0,0,0],[1,0,0],[0,1,0], [0,0,1]])
 edge_list1 = np.array([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])
 face_list1 = np.array([[0,1,2], [0,1,3], [0,2,3], [1,2,3]])
+fixed = np.array([True, False, False, False])
 
-mesh1 = Mesh(mesh_grid1, edge_list1, face_list1)
+mesh1 = Mesh(mesh_grid1, edge_list1, face_list1, fixed)
 mesh1.compute_mesh_grads()
 print(mesh1.grads_list)
 
