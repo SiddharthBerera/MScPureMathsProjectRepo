@@ -28,11 +28,15 @@ class Mesh():
         
         pr = r-p # shape (F, n)
         pq = q-p # shape (F, n)
+        qr = r-q # shape (F, n)
 
         # pointwise mutliply matrices, resulting matrix has rows which when summed correpsond to the dot for sides of a triangle
         pr_dot_pr = np.sum(pr*pr, axis=1) # shape (F)
-        pq_dot_pr = np.sum(pq*pr, axis=1) # shape (F)
         pq_dot_pq = np.sum(pq*pq, axis=1) # shape (F)
+        qr_dot_qr = np.sum(qr*qr, axis=1) # shape (F)
+
+        pq_dot_pr = np.sum(pq*pr, axis=1) # shape (F)
+        pq_dot_qr = np.sum(pq*qr, axis=1) # shape (F)
 
         areas = 0.5*np.sqrt(pr_dot_pr * pq_dot_pq - pq_dot_pr**2) # shape (F)
         areas = np.maximum(areas, 0.05) 
@@ -43,7 +47,7 @@ class Mesh():
         '''
         # e.g. grad_ps[i] stores grad of area of triangles[i] wrt p for i=1,...,no. faces 
         #grad_ps = ( -pr_dot_pr[:, None]*pq - pq_dot_pq[:, None]*pr + pq_dot_pr[:, None]*(pr+pq) ) / ( 4 * areas[:, None]) # shape (F,n)
-        grad_ps = ( pr_dot_pr[:, None]*(p-q) + pq_dot_pq[:, None]*(p-r) - np.sum((q-p)*(r-p),axis=1)[:, None]*(2*p-q-r)) / ( 4 * areas[:, None]) # shape (F,n)
+        grad_ps = ( qr_dot_qr[:, None]*(p-q) - pq_dot_qr[:, None]*(q-r)) / ( 4 * areas[:, None]) # shape (F,n)
         grad_qs = ( pr_dot_pr[:, None]*(q-p) - pq_dot_pr[:, None]*(r-p)) / ( 4 * areas[:, None]) # shape (F,n)
         grad_rs = ( pq_dot_pq[:, None]*(r-p) - pq_dot_pr[:, None]*(q-p)) / ( 4 * areas[:, None]) # shape (F,n)
 
