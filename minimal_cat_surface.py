@@ -16,6 +16,6 @@ vertices, edges, faces, border = generate_cylinder_triangulation(circle_subdivis
 cat_surface_mesh = Mesh(np.array(vertices), np.array(edges), np.array(faces), np.array(border))
 cat_surface_mesh.plot_surface()
 print(cat_surface_mesh.vertex_list[cat_surface_mesh.border_list])
-cat_surface_mesh.gradient_descent(0.05, 100)
+cat_surface_mesh.gradient_descent(0.05, 1000)
 print(cat_surface_mesh.vertex_list[cat_surface_mesh.border_list])
 cat_surface_mesh.plot_surface()
