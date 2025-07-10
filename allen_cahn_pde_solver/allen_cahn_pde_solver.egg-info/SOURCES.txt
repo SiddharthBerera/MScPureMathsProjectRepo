@@ -1,0 +1,8 @@
+setup.py
+allen_cahn_pde_solver.egg-info/PKG-INFO
+allen_cahn_pde_solver.egg-info/SOURCES.txt
+allen_cahn_pde_solver.egg-info/dependency_links.txt
+allen_cahn_pde_solver.egg-info/requires.txt
+allen_cahn_pde_solver.egg-info/top_level.txt
+examples/__init__.py
+examples/demo.py
