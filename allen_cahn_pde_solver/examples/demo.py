@@ -1,7 +1,7 @@
 import torch
-from allen_cahn_pde_solver.core.geometry.planar_domains import TriangleDomain
-from allen_cahn_pde_solver.core.fem.torch_assembly import assemble_mass_and_stiffness
-from allen_cahn_pde_solver.core.energy.allen_cahn import AllenCahnEnergy
+from core.geometry.planar_domains import TriangleDomain
+from core.fem.torch_assembly import assemble_mass_and_stiffness
+from core.energy.allen_cahn import AllenCahnEnergy
 '''
 def demo():
     # 1. Create a simple triangular domain

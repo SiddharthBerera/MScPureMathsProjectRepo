@@ -1,8 +1,16 @@
 import torch
+from math import comb
 
 # Assemble mass and stiffness matrices entirely in PyTorch
+
+def reference_triangle(k=1):
+  vertices = torch.tensor([[0,0],[1,0],[0,1]])
+  bar_basis = torch.tensor([[-1,-1,1], [1,0,0], [0,1,0]])
+  return bar_basis
+    
 def assemble_mass_and_stiffness(points: torch.Tensor,
-                                triangles: torch.LongTensor):
+                                triangles: torch.LongTensor,
+                                k: int):
     """
     points:   (N,2) float tensor of vertex coords
     triangles:(T,3) long tensor of vertex indices
@@ -22,6 +30,15 @@ def assemble_mass_and_stiffness(points: torch.Tensor,
     v02 = pts_tri[:,2] - pts_tri[:,0]
     cross = v01[:,0]*v02[:,1] - v01[:,1]*v02[:,0]  # (T,)
     area = 0.5 * torch.abs(cross)                   # (T,)
+
+    # 3) Basis matrix
+    num_tri_basis = comb(k+2, 2)
+    bar_basis = reference_triangle(k)
+    
+    # 4) affine map from reference triangle to a mesh triangle
+    J = torch.stack([v01, v02], dim=2)
+    #xi = torch.linalg.solve(J,)
+
 
     # 3) Local mass entries: Mloc_diag=A/6, Mloc_off=A/12
     Tn = triangles.shape[0]
