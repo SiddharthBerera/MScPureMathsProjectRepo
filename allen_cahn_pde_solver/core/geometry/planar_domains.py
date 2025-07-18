@@ -7,25 +7,24 @@ from .domain import Domain
 
 
 class TriangleDomain(Domain):
-    def __init__(self, vertices=((0,0), (1,0), (0,1))):
-        self.vertices = np.asarray(vertices)
-    
-    def mesh(self, h):
-        """
-        Always return a mesh of the UNIT right triangle with max-edge≈h.
-        """
-        # 1) number of subdivisions per edge
-        n = math.ceil(1.0 / h)
+    def __init__(self, vertex_list: torch.tensor, 
+                 edge_list: torch.tensor, 
+                 face_list: torch.tensor, 
+                 border_list: torch.tensor):
+        '''
+        Arguments:
+        vertex_list: (np.ndarray shape (V,n)) V points in n-d for points of mesh
+        edge_list: (np.ndarray shape (E,2)) E edges represented by pairs of vertex indices
+        face_list: (np.ndarray shape (F,3)) F faces represented by triples of vertex indices
+        border_list: (np.array shape (V)) B indices correpsonding to fixed vertices in vertex_list
+        '''
+        self.vertex_list = vertex_list
+        self.edge_list = edge_list
+        self.face_list = face_list
+        self.border_list = border_list
 
-        # 2) get reference triangle mesh on (0,0),(1,0),(0,1)
-        ref_pts, ref_cells = meshzoo.triangle(n)
-        # Now ref_pts.shape == (N_pts, 2), ref_cells.shape == (N_tri, 3)
-
-        # 3) convert to tensors
-        pts = torch.tensor(ref_pts, dtype=torch.float64)    # (N_pts, 2)
-        cells = torch.tensor(ref_cells, dtype=torch.long)   # (N_tri, 3)
-
-        return pts, cells
+    def mesh(self, h: float):
+        pass
     
     def boundary_nodes(self, mesh):
-        return mesh.boundary_nodes()
+        pass

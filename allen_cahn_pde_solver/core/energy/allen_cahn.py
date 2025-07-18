@@ -87,5 +87,47 @@ class AllenCahnEnergy:
         a_b   = self.basis_matrices[:, :, 0:2]                # (T,3,2)
         grads = torch.einsum('t i d, t i -> t d', a_b, u_tri) # (T,2)
         dirich = 0.5 * self.eps * (grads.square().sum(dim=1) * self.areas).sum()
+        energy = pot + dirich
 
-        return dirich + pot
+        return energy
+    
+    @staticmethod
+    def gradient(energy: torch.tensor, u: torch.tensor):
+        return torch.autograd.grad(energy, u, create_graph=True, retain_graph=True)[0]
+    
+    @staticmethod
+    def hessian_torch(u_grad):
+        pass
+
+    @staticmethod
+    def hessian_efficient(E_grad: torch.tensor, u: torch.tensor, edge_list: torch.tensor):
+        """
+        Vectorised extraction of Hessian entries H_{ij} on an edge list.
+
+        Returns : (E,) tensor   Hij in the same order as `edges`.
+        Cost    : one reverse pass for the gradient (already done) +
+                  *one* reverse pass for a block of Hessian rows ⇒ O((B+E)·1)
+                where B = #distinct row indices in `edges`.
+        """
+        # ---- gather distinct row indices we really need -----------------
+        row_i = edge_list[:, 0]                                  # (E,)
+        unique_i, _ = torch.unique(row_i, return_inverse=True)   # (B,), (E,)
+        B, N = unique_i.numel(), u.numel()
+
+        # ---- build one‑hot selector L (B × N) ---------------------------
+        L = torch.zeros((B, N), dtype=u.dtype, device=u.device)
+        L[torch.arange(B, device=u.device), unique_i] = 1.0
+
+        # ---- H_rows =  L @ H     shape (B, N) ---------------------------
+        H_rows = torch.autograd.grad(
+                    E_grad, u,
+                    grad_outputs=L,
+                    retain_graph=False,
+                    is_grads_batched=True        # key flag!
+                )[0]                             # (B, N)
+
+        # ---- assemble dense tensor with zeros elsewhere -----------------
+        H = torch.zeros((N, N), dtype=u.dtype, device=u.device)
+        H[unique_i] = H_rows                 # fill only needed rows
+
+        return H                            # (N,N)
