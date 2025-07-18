@@ -111,7 +111,7 @@ class AllenCahnEnergy:
         """
         # ---- gather distinct row indices we really need -----------------
         row_i = edge_list[:, 0]                                  # (E,)
-        unique_i, _ = torch.unique(row_i, return_inverse=True)   # (B,), (E,)
+        unique_i, inv_row = torch.unique(row_i, return_inverse=True)   # (B,), (E,)
         B, N = unique_i.numel(), u.numel()
 
         # ---- build one‑hot selector L (B × N) ---------------------------
@@ -130,4 +130,10 @@ class AllenCahnEnergy:
         H = torch.zeros((N, N), dtype=u.dtype, device=u.device)
         H[unique_i] = H_rows                 # fill only needed rows
 
+        idx_i, idx_j = edge_list[:,0], edge_list[:,1]
+        H_ij = H_rows[inv_row, idx_j]
+
+        H[idx_i, idx_j] = H_ij
+        H[idx_j, idx_i] = H_ij
+        
         return H                            # (N,N)
