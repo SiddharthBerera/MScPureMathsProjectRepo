@@ -96,42 +96,58 @@ class AllenCahnEnergy:
         return torch.autograd.grad(energy, u, create_graph=True, retain_graph=True)[0]
     
     @staticmethod
-    def hessian_torch(u_grad):
-        pass
+    def hessian_torch(E_grad: torch.tensor, u: torch.tensor, edge_list: torch.tensor):
+        """
+        Dense Hessian via one batched autograd cal
+
+        Returns : Hessian 2d tensor
+        Cost    : O(n**2)
+        """
+        N = u.numel()
+        I = torch.eye(N, dtype=u.dtype, device=u.device)
+        H = torch.autograd.grad(E_grad, u,
+                                grad_outputs=I,
+                                retain_graph=True,
+                                is_grads_batched=True)[0]   # (N,N)                            
+        
+        return H
 
     @staticmethod
     def hessian_efficient(E_grad: torch.tensor, u: torch.tensor, edge_list: torch.tensor):
         """
         Vectorised extraction of Hessian entries H_{ij} on an edge list.
 
-        Returns : (E,) tensor   Hij in the same order as `edges`.
+        Returns : Hessian 2d tensor  - sparse
         Cost    : one reverse pass for the gradient (already done) +
                   *one* reverse pass for a block of Hessian rows ⇒ O((B+E)·1)
                 where B = #distinct row indices in `edges`.
         """
         # ---- gather distinct row indices we really need -----------------
-        row_i = edge_list[:, 0]                                  # (E,)
-        unique_i, inv_row = torch.unique(row_i, return_inverse=True)   # (B,), (E,)
-        B, N = unique_i.numel(), u.numel()
+        rows = torch.unique(edge_list)   # (B,), (E,)
+        B, N = rows.numel(), u.numel()
 
         # ---- build one‑hot selector L (B × N) ---------------------------
         L = torch.zeros((B, N), dtype=u.dtype, device=u.device)
-        L[torch.arange(B, device=u.device), unique_i] = 1.0
+        L[torch.arange(B, device=u.device), rows] = 1.0
 
         # ---- H_rows =  L @ H     shape (B, N) ---------------------------
         H_rows = torch.autograd.grad(
                     E_grad, u,
                     grad_outputs=L,
-                    retain_graph=False,
+                    retain_graph=True,
                     is_grads_batched=True        # key flag!
                 )[0]                             # (B, N)
 
         # ---- assemble dense tensor with zeros elsewhere -----------------
         H = torch.zeros((N, N), dtype=u.dtype, device=u.device)
-        H[unique_i] = H_rows                 # fill only needed rows
+        H[rows] = H_rows                 # fill only needed rows
 
-        idx_i, idx_j = edge_list[:,0], edge_list[:,1]
-        H_ij = H_rows[inv_row, idx_j]
+        row_map = torch.full((N,), -1, dtype=torch.long, device=u.device)
+        row_map[rows] = torch.arange(B, device=u.device)
+
+        idx_i, idx_j = edge_list[:,0].contiguous(), edge_list[:,1].contiguous()
+        
+        H_ij = H_rows[row_map[idx_i], idx_j]
 
         H[idx_i, idx_j] = H_ij
         H[idx_j, idx_i] = H_ij

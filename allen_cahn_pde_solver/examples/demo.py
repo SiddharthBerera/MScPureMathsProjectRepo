@@ -1,7 +1,12 @@
 import torch
+
 from allen_cahn_pde_solver.core.geometry.planar_domains import TriangleDomain
 from allen_cahn_pde_solver.core.fem.torch_assembly import assemble_basis
+from allen_cahn_pde_solver.core.fem.gradient import gradient
+from allen_cahn_pde_solver.core.fem.hessian_dense import hessian_dense
+from allen_cahn_pde_solver.core.fem.hessian_sparse import hessian_sparse
 from allen_cahn_pde_solver.core.energy.allen_cahn import AllenCahnEnergy
+
 
 def demo(mesh: TriangleDomain, u: torch.tensor, eps: float, k: int):
     
@@ -16,15 +21,21 @@ def demo(mesh: TriangleDomain, u: torch.tensor, eps: float, k: int):
     #print(areas)
 
     # 3) Allen–Cahn energy
-    E   = AllenCahnEnergy(areas, basis_matrices, eps)
+    E = AllenCahnEnergy(areas, basis_matrices, eps)
 
     # 5) Compute and print
     energy = E.value(u, triangles)
     print(energy)
     energy_grad_u = E.gradient(energy, u)
     print(energy_grad_u)
-    hessian = E.hessian_efficient(energy_grad_u, u, mesh.edge_list)
-    print(hessian)
+
+    hessian_naive = hessian_dense(energy_grad_u, u, mesh.edge_list)
+    print('niave O(n2) with torch')
+    print(hessian_naive)
+    hessian_efficient = hessian_sparse(energy_grad_u, u, mesh.edge_list)
+    print('efficient with sparse hessian')
+    print(hessian_efficient)
+
 
 if __name__ == '__main__':
     points   = torch.tensor([[0.0, 0.0],[1.0, 0.0],[0.0, 1.0],[1.0, 1.0]], dtype=torch.float64)
