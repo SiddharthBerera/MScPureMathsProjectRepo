@@ -84,7 +84,7 @@ class AllenCahnEnergy:
 
         # ---- Dirichlet part ------------------------------------------
         # gradients: ∑_i u_i * (a_i,b_i)
-        a_b   = self.basis_matrices[:, :, 0:2]                # (T,3,2)
+        a_b   = self.basis_matrices[:, :, 0:2].to(u.dtype)                # (T,3,2)
         grads = torch.einsum('t i d, t i -> t d', a_b, u_tri) # (T,2)
         dirich = 0.5 * self.eps * (grads.square().sum(dim=1) * self.areas).sum()
         energy = pot + dirich
