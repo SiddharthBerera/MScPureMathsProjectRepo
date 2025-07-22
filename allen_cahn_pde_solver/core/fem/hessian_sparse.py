@@ -1,42 +1,38 @@
 import torch
+from torch.func import vmap, hessian
+import allen_cahn_pde_solver.core.energy.allen_cahn as AllenCahnEnergy
 
-def hessian_sparse(E_grad: torch.tensor, u: torch.tensor, edge_list: torch.tensor):
-        """
-        Vectorised extraction of Hessian entries H_{ij} on an edge list.
 
-        Returns : Hessian 2d tensor  - sparse
-        Cost    : one reverse pass for the gradient (already done) +
-                  *one* reverse pass for a block of Hessian rows ⇒ O((B+E)·1)
-                where B = #distinct row indices in `edges`.
-        """
-        # ---- gather distinct row indices we really need -----------------
-        rows = torch.unique(edge_list)   # (B,), (E,)
-        B, N = rows.numel(), u.numel()
+def hessian_sparse(u, vertices, triangles, energy_fn, params):
+    """
+    Assemble the global sparse Hessian for a mesh using a per-triangle energy function.
 
-        # ---- build one‑hot selector L (B × N) ---------------------------
-        L = torch.zeros((B, N), dtype=u.dtype, device=u.device)
-        L[torch.arange(B, device=u.device), rows] = 1.0
+    Parameters:
+        u         : (N,) tensor of nodal values
+        vertices  : (N, 2) tensor of node coordinates
+        triangles : (T, 3) tensor of triangle indices
+        energy_fn : function(u_tri, vertices_tri, *args, **kwargs) -> scalar energy
+        *args, **kwargs: extra arguments for energy_fn (e.g., eps)
 
-        # ---- H_rows =  L @ H     shape (B, N) ---------------------------
-        H_rows = torch.autograd.grad(
-                    E_grad, u,
-                    grad_outputs=L,
-                    retain_graph=True,
-                    is_grads_batched=True        # key flag!
-                )[0]                             # (B, N)
+    Returns:
+        H_sparse  : (N, N) torch.sparse_coo_tensor, global Hessian
+    """
+    faces_coords = vertices[triangles]   # (T, 3, 2)
+    u_tri = u[triangles]                 # (T, 3)
 
-        # ---- assemble dense tensor with zeros elsewhere -----------------
-        H = torch.zeros((N, N), dtype=u.dtype, device=u.device)
-        H[rows] = H_rows                 # fill only needed rows
+    # Vectorized local Hessians: (T, 3, 3)
+    local_hessians = vmap(hessian(energy_fn), in_dims=(0, 0, None))(
+        u_tri, faces_coords, params
+    )
 
-        row_map = torch.full((N,), -1, dtype=torch.long, device=u.device)
-        row_map[rows] = torch.arange(B, device=u.device)
+    T, n, _ = local_hessians.shape  # n=3 for triangles
 
-        idx_i, idx_j = edge_list[:,0].contiguous(), edge_list[:,1].contiguous()
-        
-        H_ij = H_rows[row_map[idx_i], idx_j]
+    # Assemble global indices for COO format
+    rows = triangles.repeat_interleave(n, dim=1).flatten()  # (T*3*3,)
+    cols = triangles.repeat(1, n).flatten()                 # (T*3*3,)
+    vals = local_hessians.flatten()                         # (T*3*3,)
 
-        H[idx_i, idx_j] = H_ij
-        H[idx_j, idx_i] = H_ij
-        
-        return H                            # (N,N)
+    indices = torch.stack([rows, cols], dim=0)
+    N = u.shape[0]
+    H_sparse = torch.sparse_coo_tensor(indices, vals, size=(N, N)).coalesce()
+    return H_sparse

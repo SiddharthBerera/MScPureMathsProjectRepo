@@ -1,24 +1,6 @@
 import torch
 import math
-
-# barycentric monomial integral over simplex
-def bary_integral(alpha, beta, gamma, *, dtype=None, device=None):
-    """
-    alpha, beta, gamma  : int, float, or torch.Tensor (broadcastable)
-    dtype, device       : optional overrides when inputs are Python ints
-    Return  integral of (phi_1)^a * (phi_2)^b * (phi_3)^b  
-    """
-    # Promote to tensor for vectorisation
-    alpha = torch.as_tensor(alpha, dtype=dtype, device=device)
-    beta  = torch.as_tensor(beta,  dtype=alpha.dtype, device=alpha.device)
-    gamma = torch.as_tensor(gamma, dtype=alpha.dtype, device=alpha.device)
-
-    # log-factorial(n) = lgamma(n+1)
-    numer = torch.lgamma(alpha + 1) + torch.lgamma(beta + 1) + torch.lgamma(gamma + 1)
-    denom = torch.lgamma(alpha + beta + gamma + 3)        # (…+2)! ⇒ +3 in lgamma
-
-    coeff = 2.0 * torch.exp(numer - denom)                # shape = broadcast result
-    return coeff 
+from allen_cahn_pde_solver.core.fem.barycentric import bary_integral
 
 class AllenCahnEnergy:
     """
@@ -34,6 +16,8 @@ class AllenCahnEnergy:
     def __init__(self, areas: torch.Tensor, basis_matrices: torch.Tensor, eps: float):
         self.areas = areas
         self.basis_matrices = basis_matrices
+        self.a_b = self.basis_matrices[:, :, 0:2].to(areas.dtype)
+
         self.eps = eps
 
         # degree-4 barycentric integrals (scalars on the same device / dtype)
@@ -55,15 +39,29 @@ class AllenCahnEnergy:
         Returns a (T,) tensors.
         """
 
-        u = self.areas * ( 1
+        potential = self.areas * ( 1
         + self.I400 * ( u1**4 + u2**4 + u3**4 ) 
         - 2 * self.I200 * ( u1**2 + u2**2 + u3**2 )
         - 4 * self.I110 * ( u1*u2 + u1*u3 + u2*u3 )
         + 6 * self.I220 * ( (u1*u2)**2 + (u1*u3)**2 + (u2*u3)**2 )
         + 4 * self.I310 * ( u1*u2**3 + u1**3*u2 + u1*u3**3 + u1**3*u3 + u2*u3**3 + u2**3*u3)
-        + 12 * self.I211 * (u1**2*u2*u3 + u1*u2**2*u3 + u1*u2*u3**2 ) )
+        + 12 * self.I211 * (u1**2*u2*u3 + u1*u2**2*u3 + u1*u2*u3**2 ) ) / (4*self.eps)
 
-        return u   # shape (T,)
+        return potential   # shape (T,)
+    
+    def _dirichlet_energy_per_triangle(self, u1, u2, u3):
+        """
+        Compute int_triangle |grad u|^2 for every triangle in a vectorised way
+        ----------
+        Arguments are (T,) tensors.
+        ----------
+        Returns a (T,) tensors.
+        """
+        # gradients: ∑_i u_i * (a_i,b_i)
+        grads = torch.einsum('t i d, t i -> t d', self.a_b, torch.stack((u1, u2, u3), dim=1))  # (T,2)
+        dirich = 0.5 * self.eps * (grads.square().sum(dim=1) * self.areas)  # (T,)
+        return dirich  # shape (T,)
+
 
     # ---- full energy --------------------------------------------------
     def value(self, u: torch.Tensor, triangles: torch.Tensor) -> torch.Tensor:
@@ -80,76 +78,60 @@ class AllenCahnEnergy:
         u1, u2, u3 = u_tri.unbind(dim=1)      # each (T,)
 
         # ---- potential part ------------------------------------------
-        pot = self._potential_per_triangle(u1, u2, u3).sum() / (4*self.eps)
+        pot = self._potential_per_triangle(u1, u2, u3).sum()
 
         # ---- Dirichlet part ------------------------------------------
-        # gradients: ∑_i u_i * (a_i,b_i)
-        a_b   = self.basis_matrices[:, :, 0:2].to(u.dtype)                # (T,3,2)
-        grads = torch.einsum('t i d, t i -> t d', a_b, u_tri) # (T,2)
-        dirich = 0.5 * self.eps * (grads.square().sum(dim=1) * self.areas).sum()
+        dirich = self._dirichlet_energy_per_triangle(u1, u2, u3).sum()
+        
         energy = pot + dirich
-
         return energy
     
-    @staticmethod
-    def gradient(energy: torch.tensor, u: torch.tensor):
-        return torch.autograd.grad(energy, u, create_graph=True, retain_graph=True)[0]
     
     @staticmethod
-    def hessian_torch(E_grad: torch.tensor, u: torch.tensor, edge_list: torch.tensor):
+    def triangle_energy(u_tri, vertices, params):
         """
-        Dense Hessian via one batched autograd cal
+        Compute Allen-Cahn energy for a single triangle.
+        u_tri: (3,) nodal values
+        area: scalar
+        basis_matrix: (3,2)
+        eps: float
+        """
 
-        Returns : Hessian 2d tensor
-        Cost    : O(n**2)
-        """
-        N = u.numel()
-        I = torch.eye(N, dtype=u.dtype, device=u.device)
-        H = torch.autograd.grad(E_grad, u,
-                                grad_outputs=I,
-                                retain_graph=True,
-                                is_grads_batched=True)[0]   # (N,N)                            
+        vertices = vertices.to(dtype=torch.float64)
+        eps = params['eps']
         
-        return H
-
-    @staticmethod
-    def hessian_efficient(E_grad: torch.tensor, u: torch.tensor, edge_list: torch.tensor):
-        """
-        Vectorised extraction of Hessian entries H_{ij} on an edge list.
-
-        Returns : Hessian 2d tensor  - sparse
-        Cost    : one reverse pass for the gradient (already done) +
-                  *one* reverse pass for a block of Hessian rows ⇒ O((B+E)·1)
-                where B = #distinct row indices in `edges`.
-        """
-        # ---- gather distinct row indices we really need -----------------
-        rows = torch.unique(edge_list)   # (B,), (E,)
-        B, N = rows.numel(), u.numel()
-
-        # ---- build one‑hot selector L (B × N) ---------------------------
-        L = torch.zeros((B, N), dtype=u.dtype, device=u.device)
-        L[torch.arange(B, device=u.device), rows] = 1.0
-
-        # ---- H_rows =  L @ H     shape (B, N) ---------------------------
-        H_rows = torch.autograd.grad(
-                    E_grad, u,
-                    grad_outputs=L,
-                    retain_graph=True,
-                    is_grads_batched=True        # key flag!
-                )[0]                             # (B, N)
-
-        # ---- assemble dense tensor with zeros elsewhere -----------------
-        H = torch.zeros((N, N), dtype=u.dtype, device=u.device)
-        H[rows] = H_rows                 # fill only needed rows
-
-        row_map = torch.full((N,), -1, dtype=torch.long, device=u.device)
-        row_map[rows] = torch.arange(B, device=u.device)
-
-        idx_i, idx_j = edge_list[:,0].contiguous(), edge_list[:,1].contiguous()
+        I400 = 1/15
+        I310 = 1/60
+        I220 = 1/90
+        I211 = 1/180
+        I200 = 1/6
+        I110 = 1/12
         
-        H_ij = H_rows[row_map[idx_i], idx_j]
 
-        H[idx_i, idx_j] = H_ij
-        H[idx_j, idx_i] = H_ij
+        v0, v1, v2 = vertices
+        e1, e2 = v1 - v0, v2 - v0
+        area = 0.5 * torch.abs(e1[0] * e2[1] - e1[1] * e2[0])
         
-        return H                            # (N,N)
+        u1, u2, u3 = u_tri
+
+
+        # Potential part (copy from _potential_per_triangle, but for one triangle)
+        pot = area * ( 1
+        + I400 * ( u1**4 + u2**4 + u3**4 ) 
+        - 2 * I200 * ( u1**2 + u2**2 + u3**2 )
+        - 4 * I110 * ( u1*u2 + u1*u3 + u2*u3 )
+        + 6 * I220 * ( (u1*u2)**2 + (u1*u3)**2 + (u2*u3)**2 )
+        + 4 * I310 * ( u1*u2**3 + u1**3*u2 + u1*u3**3 + u1**3*u3 + u2*u3**3 + u2**3*u3)
+        + 12 * I211 * (u1**2*u2*u3 + u1*u2**2*u3 + u1*u2*u3**2 ) ) / (4*eps)
+
+        # Dirichlet part
+        ones = torch.ones((3,1), dtype=vertices.dtype, device=vertices.device) # shape (3,1)
+        A = torch.cat([vertices, ones], dim=1) 
+        print(torch.det(A))
+        Ainv = torch.linalg.inv(A)   # shape (3,3)
+        basis_matrix = Ainv.T
+        basis_matrix_xy = basis_matrix[:, :2]
+        grads = torch.einsum('i d, i -> d', basis_matrix_xy, u_tri)
+        dirich = 0.5 * eps * grads.square().sum() * area
+
+        return pot + dirich
