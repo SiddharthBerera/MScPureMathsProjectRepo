@@ -83,4 +83,16 @@ MscPureMathsProjectRepo/
 ├── thesis/ # the MSc dissertation
 └── README.md
 
+## 📊 Example Visualisations
+
+<p align="center">The following figures illustrate one of the meshes created for discretising surfaces, and its configuration after evolution toward a local minimum of the area functional, obtained via the **gradient descent evolution** implemented in this project.  
+These outputs demonstrate the convergence of triangulated surfaces toward minimal configurations under the area functional.
+
+  <img src="figures/img1.png" alt="Surface after Gradient Descent (example 1)" width="400"/>
+  <img src="figures/img2.png" alt="Surface after Gradient Descent (example 2)" width="400"/>
+</p>
+
+- **Red points:** vertices in the evolving mesh  
+- **Green points:** fixed boundary vertices  
+- **Blue mesh:** triangulated surface evolving toward a minimal surface
 
