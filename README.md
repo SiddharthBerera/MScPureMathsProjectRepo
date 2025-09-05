@@ -1,21 +1,30 @@
-# SurfaceEvolverDiss
-_A command-line toolkit for exploring Allen–Cahn min–max solutions and
-$p$-widths on triangulable domains.
+# Pure Mathematics MSc Project Repo
 
-## 1.  Project scope
+## 📖 Overview
+This repository contains the code and computations accompanying my MSc dissertation *“Min–Max Methods for Computing Planar
+Widths and Connections to the Allen–Cahn PDE”* at Imperial College London, supervised by Professor Marco Guaraco.  
+The project develops a unified **min–max framework** connecting:
 
-This project re-implements Brakke’s *Surface Evolver* philosophy for
-phase-transition geometry:
+- Linear spectral theory (min–max construction of eigenvalues)  
+- Geometric widths (nonlinear analogues of eigenvalues for length/volume functionals)  
+- Nonlinear PDEs (Allen–Cahn equation and variational solutions)  
 
-* **Allen–Cahn energy** on 2-D domains tessellated by equilateral
-  triangles  
-  $E_\varepsilon(u)=\int_{\Omega}(\tfrac{\varepsilon}{2}|\nabla u|^{2}+
-  \tfrac{(1-u^{2})^{2}}{4\varepsilon})\,dx$.
-* **Interactive CLI** that lets a user
-  - assemble FEM matrices,
-  - run gradient flow, Newton steps, or a $k$-parameter mountain-pass
-    loop,
-  - verify Morse index and undo/redo along an evolution history.
-* **Finite-dimensional subspaces** spanned by the first \(k\) Dirichlet
-  Laplacian eigenfunctions so the resulting critical point realises the
-  $k$-width of the domain (Dey 2024)
+Programs for numerical implementation via Finite Element Methods (FEM) and visualising the results are included for two problems:
+1) Minimal Surface Evolution via the Area Functional (pythonSurfaceEvolver)
+2) Planar Width Exploration via the Allen--Cahn Energy (allen_cahn_pde_solver)
+
+---
+
+## 📂 Repository Structure
+- **`/src/`** — core Python/C++ code for surface evolver–style computations  
+- **`/figures/`** — generated figures used in the dissertation  
+- **`/notebooks/`** — Jupyter notebooks with experiments, PDE solvers, and visualisations  
+- **`/thesis/`** — LaTeX source of the dissertation  
+
+---
+
+## ⚙️ Installation
+Clone the repository:
+```bash
+git clone https://github.com/SiddharthBerera/SurfaceEvolverDiss.git
+cd SurfaceEvolverDiss
