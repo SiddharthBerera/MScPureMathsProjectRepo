@@ -30,10 +30,11 @@ Clone:
 ```bash
 git clone https://github.com/SiddharthBerera/MScPureMathsProjectRepo.git
 cd MScPureMathsProjectRepo
-
+```
 ---
 
 ## 📂 Repository Structure
+```
 MscPureMathsProjectRepo/
 │
 ├── allen_cahn_pde_solver/ # Allen–Cahn PDE solver (Finite Element implementation)
@@ -82,7 +83,7 @@ MscPureMathsProjectRepo/
 │
 ├── thesis/ # the MSc dissertation
 └── README.md
-
+```
 ## 📊 Example Visualisations
 
 The following figures illustrate one of the meshes created for discretising surfaces, and its configuration after evolution toward a local minimum of the area functional.  
