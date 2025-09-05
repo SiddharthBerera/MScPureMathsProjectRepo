@@ -1,0 +1,31 @@
+\chapter{Supporting Material for Chapter 3}
+
+\section{Table of Precomputed Integrals and Polynomials} \label{appendix-3:int-table}
+
+\renewcommand{\arraystretch}{1.2} % global, tidy spacing
+\begin{align}
+\begin{array}{c|c|c}
+\text{monomial} & \int_{\Delta_i}\text{(monomial)}\,dx & \text{name} \\ \hline
+\lambda_i & \tfrac{1}{3}  & I_{100} \\
+\lambda_i^2 & \tfrac{1}{6} & I_{200} \\
+\lambda_i\lambda_j & \tfrac{1}{12} & I_{110} \\
+\lambda_i^3 & \tfrac{1}{10} & I_{300} \\
+\lambda_i^2\lambda_j & \tfrac{1}{30} & I_{210} \\
+\lambda_1\lambda_2\lambda_3 & \tfrac{1}{60} & I_{111} \\
+\lambda_i^4 & \tfrac{1}{15} & I_{400} \\
+\lambda_i^3\lambda_j & \tfrac{1}{60} & I_{310} \\
+\lambda_i^2\lambda_j^2 & \tfrac{1}{90} & I_{220} \\
+\lambda_i^2\lambda_j\lambda_k & \tfrac{1}{180} & I_{211} \\
+\end{array}
+\end{align}
+
+\begin{align}\label{eq-Q}
+Q(u_1, u_2, u_3) 
+= 1 & + I_{400}(u_1^4+u_2^4+u_3^4) -  2I_{200}(u_1^2+u_2^2+u_3^2)  \nonumber \\
+& -4I_{110}(u_1u_2 + u_1u_3+u_2u_3) + 6I_{220}(u_1^2u_2^2 + u_1^2u_3^2+u_2^2u_3^2) \nonumber \\
+& +4I_{310}(u_1u_2^3 + u_1^3u_2 + u_1u_3^3+ u_1^3u_3 + u_2u_3^3 + u_2^3u_3) \nonumber \\
+& +12I_{211}(u_1^2u_2u_3 + u_1u_2^2u_3 + u_1u_2u_3^2)
+\end{align}
+
+
+

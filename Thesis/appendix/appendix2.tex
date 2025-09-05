@@ -1,0 +1,73 @@
+\chapter{Supporting Material for Chapter 2}\label{appendix-2}
+\section{Geometry}
+\begin{definition}[Diffeomorphism]
+Let $V$ and $M$ be two differentiable manifolds and $f:V\to M$ be a map between them. We say that $f$ is a \emph{diffeomorphism} if both $f$ and its inverse map $f^{-1}$ are continuously differentiable. If $f(V) = M$, we say that $V$ and $M$ are diffeomorphic. 
+\end{definition}
+
+\noindent From the definition it is immediate that the inverse of a diffeomorphism is a diffeomorphism and that compositions of diffeomorphisms are one, too. The composition of diffeomorphisms is associative as they are functions and the identity map is a diffeomorphism; hence, the set of diffeomorphisms on a manifold have a group structure.
+
+\begin{definition}[Diffeomorphism Group]
+Let $M$ be a smooth (infinitely differentiable) manifold that is second-countable and Hausdorff. The group $\operatorname{Diff}(M)$ is the set of smooth diffeomorphisms on $M$, with composition.
+\end{definition}
+
+\begin{definition}[Homotopy]
+Let $X$ and $Y$ be two topological spaces and $f_0, f_1:X\to Y$ both be continuous. A \emph{homotopy} is a continuous function $H: [0,1]\times X \to Y$ such that $H(0,x)=f_0(x)$ and $H(1,x)=f_1(x)$, in which case we say that $f_0$ and $f_1$ are homotopic.
+\end{definition}
+
+\begin{remark}[$\operatorname{Diff}_0(M)$]
+The set of smooth diffeomorphisms  $\operatorname{Diff}_0(M)$, homotopic to the identity, is a subgroup of $\operatorname{Diff}(M)$
+\end{remark}
+
+\begin{definition}[Immersion]
+An \emph{immersion} is a differentiable function $f:V \to M$ between differentiable manifolds such that the differential, $d_pf: T_pV \to T_{f(p)}M$, is injective at every $p\in M$.
+\end{definition}
+
+\begin{definition}[Embedding]
+The smooth map $f:V\to M$ is said to be an \emph{embedding} if:
+\begin{enumerate}
+    \item It is an immersion i.e. its derivative is everywhere injective.
+    \item $f$ is a homeomorphism of $V$ onto its image $f(V)$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Isotopy]\label{def:isotopy}
+ Let $V$ and $M$ be two differentiable manifolds and $f_0, f_1 : X\to Y$ both be smooth. An \emph{Isotopy} is a continuous function $F: [0,1]\times V \to M$ such that for each $t\in [0,1]$, the map $F(t,x) =: F_t(x):V\to M$ is an embedding.
+\end{definition}
+
+\begin{remark}\label{remark:embediffdiff}
+It can be shown by the Constant Rank Theorem that $f$ being an embedding is equivalent to it being a smooth map whose image is diffeomorphic to its domain (\ref{lem:embediffdiff}).
+\end{remark}
+
+\begin{lemma}\label{lem:embediffdiff}
+Let $f:V\to M$ be a smooth map between differentiable manifolds that is immersive and a homeomorphism of $V$ onto its image $f(V)$ then $f$ is a diffeomorphism between $V$ and $f(V)$.
+\end{lemma}
+\begin{proof}
+For $f$ to be an immersion it is necessary that $k := \dim V \leq \dim M =: n$. Let $y_0 = f(v_0) \in f(V)$ be some fixed point. By the Constant Rank Theorem there exists smooth functions (with well-defined and smooth inverses)
+$$\varphi_1:U\subset V \to \mathbb{R}^k \quad \text{and} \quad \varphi_2:N\subset M \to \mathbb{R}^n$$ 
+such that 
+\begin{equation}\label{eq:charts}
+\varphi_2\big(f\big(\varphi_1^{-1}(u_1,\cdots,u_k)\big)\big) = (u_1,\cdots,u_k,0,\cdots,0).
+\end{equation}
+Restricting $\varphi_2(N)$ to the subspace of $M$, $M_0$ where the last $n-k$ coordinates are $0$, we have that $\varphi_2^{-1}(M_0) = N \cap f(V)$. 
+Since $f$ is a homeomorphism of $V$ onto is image it is bijective onto its image and so the inverse $\big(f|_{U} \big)^{-1}:f(U)\to U$ is well defined and bijective. Expressing this inverse using Equation (\ref{eq:charts}),
+$$\big(f|_{U} \big)^{-1} = \varphi_1^{-1} \circ \pi \circ \varphi_2,$$
+where $\pi:\mathbb{R}^k \times \mathbb{R}^{n-k} \to \mathbb{R}^k, \pi\big(\vec{u},\vec{0}\big) = \vec{u}$. Since $\pi$ is a projection it is smooth, thus the whole map is a composition of smooth maps and so $\big(f|_{U} \big)^{-1}$ is smooth.\\
+For each $v \in V$ the $U_v$ guaranteed by the Constant Rank Theorem produces images $f(U_v)$. The union of these images covers $f(V)$ and so we can apply the above construction for each $v$, to produce a smooth map onto $f(V)$. Note this map agrees on different $U_v$ that may overlap due to $f$ being injective. We can glue these maps together, giving a smooth global inverse $f^{-1}:f(V)\to V$, thus $f$ is a diffeomorphism of $V$ onto its image.
+\end{proof}
+
+\begin{definition}[Degree]
+If $\sigma: S^1\to S^1$ then the induced group homomorphism $\sigma_*:H_1(S^1)\cong \mathbb{Z} \to H_1(S^1)\cong \mathbb{Z}$ is multiplication by a unique integer $a$, because $\mathbb{Z}$ is the free abelian group on one generator. Define $\operatorname{deg}(\sigma)=a$.
+\end{definition}
+
+\noindent\textbf{Equivalent formulation of Winding Number \cite{stein03}.}
+If $f$ is $C^1$ and $z_0\in\Omega$, writing $\gamma(\theta):=f(e^{i\theta})$,
+\[
+\operatorname{wind}(f)=\frac{1}{2\pi} \big(\Delta\arg\!\big(\gamma(\theta)-z_0\big) \pmod{2\pi}\big)
+=\frac{1}{2\pi i}\int_0^{2\pi}\frac{\gamma'(\theta)}{\gamma(\theta)-z_0}\,d\theta.
+\]
+
+\begin{definition}[Degree in Higher Dimensions]\label{def:deg-higher-dims}
+If $\sigma: \partial\Delta^d \cong S^{d-1}\to \partial\Delta^d\cong S^{d-1}$ then the induced group homomorphism $\sigma_*:H_{d-1}(S^{d-1})\cong \mathbb{Z} \to H_{d-1}(S^{d-1})\cong \mathbb{Z}$ is still multiplication by a unique integer $a$. Define $\operatorname{deg}(\sigma)=a$.
+\end{definition}
+
+

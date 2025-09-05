@@ -1,0 +1,68 @@
+\chapter{Further Directions}
+\label{ch:5}
+
+\section{Known Results for Widths}
+Even for very simple planar regions, higher $p$–widths are largely unknown. Beyond a few examples there is no closed form for $\omega_p(\Omega)$:
+\begin{itemize}
+  \item For convex regions $\Omega\subset\mathbb{R}^2$ ,
+        \begin{align*}
+        \omega_1(\Omega)=\inf_{\|v\|=1}\left(\max_{x\in\Omega} x\!\cdot v-\min_{x\in\Omega} x\!\cdot v\right)
+        \quad\text{(Chodosh--Cholsaipant~\cite{Chodosh25}, Chapter~\ref{ch:3}).}
+        \end{align*}
+    \item For the equilateral triangle inscribed in the unit disc $T\subset\mathbb{R}^2$,
+        \[
+        \omega_2(T)=\tfrac{3}{2}, \omega_3(T)=\tfrac{3\sqrt{3}}{2}, \omega_4(T)=3, 
+        \quad\text{(Chodosh--Cholsaipant~\cite{Chodosh25}).}
+        \]
+  \item For the round 2-sphere $(S^2,g_0)$,
+        \begin{align*}
+        \omega_p(S^2,g_0)=2\pi\,\big\lfloor\sqrt{p}\,\big\rfloor
+        \qquad\text{(Chodosh--Mantoulidis~\cite{Chodosh23}).}
+        \end{align*}
+  \item For the round projective plane $(\mathbb{RP}^2,g_0)$,
+        \begin{align*}
+        \omega_p(\mathbb{RP}^2,g_0)=2\pi\,\big\lfloor\tfrac{1}{4}\big(1+\sqrt{1+8p}\big)\,\big\rfloor
+        \qquad\text{(Marx--Kuo~\cite{Marx-Kuo25}).}
+        \end{align*}
+  \item For a compact Riemannian manifold of dimension $n+1$ with metric $g$, $(M^{n+1}, g)$,
+        \begin{align*}
+        \omega_p(M,g) \sim\ a(n)\operatorname{Vol}_g(M)^{\frac{n}{n+1}}p^{\frac{1}{n+1}},\quad\text{as $p\to\infty,$}\qquad\text{(Liokumovich--Marques--Neves~\cite{Liokumovich18}).} 
+        \end{align*}
+        with a universal constant $a(n)>0$ for each $n$.  In particular, in the planar case $n=1$, we have that for regions $\Omega\subset\mathbb{R}^2$,
+        \begin{align*}
+        \omega_p(\Omega) \sim\ a(1)\mathrm{Area}(\Omega)^{\frac{1}{2}}p^{\frac{1}{2}},\quad \text{as $p\to\infty$.}
+        \end{align*}
+\end{itemize}
+
+\section{Challenges and Opportunities in Proving Width Conjectures}
+
+Understanding and proving explicit formulas for $p$--widths in higher dimensions remains a challenging open problem. The obstacles are structural as well as technical and arise even for geometrically simple domains.
+
+\noindent A first challenge is that a hypersurface realising a given $p$–width need not be connected - it may consist of multiple disjoint components whose combined volume attains the width. This multiplicity phenomenon is difficult to capture in a purely variational argument and complicates any min--max characterisation, as one must control the interaction between components and ensure that the correct total measure is realised.
+
+\noindent A second challenge lies in encoding the boundary data of slices in higher--dimensional sweep--outs.  In the planar setting, the endpoint map produces a simple $S^1 \times S^1$ parameter space, but in higher dimensions the analogous parameter space $X$ can be far more intricate. Constructing such an $X$ so that it captures all relevant boundary configurations, while remaining tractable for topological arguments, is a significant obstacle. Tracking how hypersurface boundaries split, merge, or change topology adds another layer of difficulty.
+
+\noindent With these difficulties in mind, we cautiously conjecture for a Euclidean $d$–simplex, that the first width is equal to the minimal altitude:
+\begin{conjecture}[First width of a $d$–simplex]\label{conjecture1}
+Let $\Delta^d\subset\mathbb{R}^d$ be a Euclidean $d$–simplex with vertices 
+$v_0,\dots,v_d$ and let 
+$F_i=\operatorname{conv}\big(\{v_0,\dots,v_d\}\setminus\{v_i\}\big)$ 
+be the $(d-1)$–simplex opposite $v_i$. Then
+\[
+  \omega_1(\Delta^d) = \min_{i=0,\dots,d}\operatorname{dist}\big(v_i,\operatorname{aff}(F_i)\big).
+\]
+Equivalently,
+\[
+  \omega_1(\Delta^d) = \min_{i=0,\dots,d}\frac{d\,\operatorname{Vol}_d(\Delta^d)}{\operatorname{Vol}_{d-1}(F_i)},
+\]
+since 
+$\operatorname{Vol}_d(\Delta^d)
+ =\tfrac{1}{d}\operatorname{Vol}_{d-1}(F_i)\cdot 
+  \operatorname{dist}(v_i,\operatorname{aff}(F_i))$.
+\end{conjecture}
+
+\noindent The proof strategy outlined in Chapter~\ref{ch:3} suggests a path forward via intersection theory in an appropriate parameter space $X$, but the difficulties noted above - particularly the possibility of disconnected minimising hypersurfaces - must be addressed for this approach to succeed. One possible discretisation approach is to represent the boundary of a hypersurface in the sweep--out by a mesh of $n$ equally spaced points, mapping these to a point in $\oplus_{i=1}^d S^{d-1}$ (which in the planar case $d=2$ gives the torus $T^2 = \oplus_{i=1}^2 S^1$). As in Lemma (\ref{lem:polygon-width-ub}), one could then search for target sets that any such path must intersect to obtain upper bounds for first widths of higher–dimensional domains and potentially for higher $p$–widths.
+
+\noindent A complementary direction for future work is provided by the numerical framework developed in Chapter~\ref{ch:4}. FEM implementations of the Allen–Cahn equation - or alternative discretisations - can be used to search for $p$--width realising hypersurfaces in a wide range of domains, including higher–dimensional simplices. By analysing the zero level sets, one can directly investigate the two key challenges above: detecting multiplicity phenomena and studying topology changes. This allows one to identify geometric features that any analytic proof must address. Such computational experiments can supply evidence for or against conjectured width formulas, guide the refinement of proof strategies, and help prioritise conjectures that are most promising for rigorous resolution.
+
+

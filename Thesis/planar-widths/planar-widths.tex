@@ -1,0 +1,310 @@
+\chapter{The First Width of Planar Domains}
+\label{ch:3}
+
+As stated in the introduction, we focus on the \emph{first width} for planar domains, defined in direct analogy to the second eigenvalue of a linear operator via the Courant--Fischer characterisation (\ref{CourantFischer}), but for the $\mathbf{Length}$ functional. The mountain pass framework that underlies the study in this chapter is: the \textbf{space of objects} is a class of smooth curves in the domain; the \textbf{admissible families} of these curves are $1$-parameter \emph{sweep--outs}; the \textbf{functional} is the length of curves in these families. While higher $p$-widths - analogous to higher eigenvalues - are well defined, our present aim is to focus on the case of the first width, which is already complex enough. Our main goal is to present a novel proof of the characterisation of the first width for planar convex polygons. The first width, $\omega_1(\Omega)$, is the largest number $L$ such that every $1$-parameter sweep-out contains a curve of length at least $L$. It plays the same role for curves in $\Omega$ as the second eigenvalue for a matrix: the minimal unavoidable length encountered when sweeping the domain with one degree of freedom. We define sweep--outs precisely and present a new proof that, for convex polygons, the first width coincides with the classical minimal width. Finally, we discuss how this viewpoint may extend to higher dimensions. This last part is offered not as a proof, but rather an outlook towards computing widths of convex, compact domains in more general settings.
+
+\section{Sweep-outs}
+We restrict our attention to simply-connected, compact domains $\Omega\subset\mathbb{R}^2$. Fix the reference $1$-parameter family,
+\begin{equation}
+\gamma^{*}_{t}\;=\;D^{2}\cap\{\,y=t\,\}, \qquad t\in[-1,1],
+\end{equation}
+namely the set of horizontal chords on the unit disc.
+In this dissertation we adopt a simpler notion of sweep-outs, narrower than the one used in the standard treatments by authors such as Guth (\cite{Guth07}), Guaraco (\cite{{Guaraco18}}), Chodosh and Cholsaipant (\cite{Chodosh25}). We define a ($1$-parameter) sweep-out of $\Omega$ as any family of curves obtained from $\{\gamma^{*}_{t}\}$ by a “nice”, smooth deformation to the push--forward of the reference family, under a continuous map from the disc to the domain. \\
+For the construction of diffeomorphisms with “nice” properties, we note some key definitions from Hatcher \cite{Hatcher02} and Hirsch \cite{Hirsch76}. The essential ideas of “deformation without tearing” and winding numbers are stated here; further background and related remarks appear in Appendix (\ref{appendix-2}).
+
+\begin{definition}[Isotopy (see \ref{def:isotopy} for the equivalent definition in Hirsch)]
+An Isotopy is a continuous function $F: [0,1]\times V \to M$ such that it is a homotopy and for each $t\in [0,1]$ the map $F_t(x)$ is a diffeomorphism.
+\end{definition}
+
+\noindent To formalise that our curves genuinely sweep the disc and wraps around the boundary exactly once in a consistent direction we introduce the notion of \emph{winding number}.
+
+\begin{definition}[Winding Number]\label{def:winding-boundary}
+Let $\Omega\subset\mathbb{R}^2$ be a disc-like region with boundary $\partial\Omega$ a simple closed curve, oriented counter-clockwise from the interior of $\Omega$. Give $\partial D^2$ the counter-clockwise orientation as well.
+For a continuous map $f:\partial D^2\to\partial D^2$, choose any orientation-preserving homeomorphism $\psi:\partial D^2\to\partial D^2$ and set $\sigma:=\psi^{-1}\circ f:S^1\to S^1$.  
+The \emph{winding number} of $f$ is
+\[
+\operatorname{wind}(f):=\deg(\sigma)\in\mathbb{Z}.
+\]
+This integer is independent of the choice of $\phi$.
+\end{definition}
+
+\noindent Our definition of sweep–outs will be given for regions that are diffeomorphic to the closed unit disc; we refer to such regions as “disc–like”.
+\begin{definition}[disc-like Region]
+We say that $\Omega$ is a disc-like region if there exists a map $\phi:D^2\to \Omega$ such that:
+\begin{enumerate}
+    \item $\phi$ is continuous on all of $D^2$.
+    \item $\phi|_{\operatorname{Int}(D^2)}$ is a diffeomorphism.
+    \item $\phi(\partial D^2) \subset \partial \Omega$.
+    \item $\phi|_{\partial D^2}: \partial D^2 \to \partial \Omega$ has winding number 1.
+\end{enumerate}
+Call a map satisfying these properties a disc-like map for the disc-like region $\Omega$.
+\end{definition}
+\begin{remark}
+Definition (\ref{def:winding-boundary}) defines the winding number for maps $\,\partial D^2\to\partial D^2$. Since a disc-like region $\Omega$ has boundary that is a simple closed curve, the same definition applies verbatim with $\partial\Omega$ in place of $\partial D^2$.
+\end{remark}
+
+\begin{definition}[Sweep-out]
+A sweep-out of a disc-like region $\Omega$ is a continuous family of curves $\gamma_t$ given by, 
+\begin{equation}
+\gamma_t = \Psi_t(\phi(\gamma^*_t)), \quad t\in[-1,1],
+\end{equation}
+where $\Psi: [-1,1]\times\Omega \to \Omega$; $(t,p) \mapsto \Psi_t(p)$ satisfies:
+\begin{enumerate}
+    \item $\Psi$ is an isotopy starting at $\Psi_{-1} = \operatorname{Id}_{\Omega}$.
+    \item $\Psi_t|_{\partial\Omega} = \operatorname{Id}_{\partial\Omega}$ for each $t$.
+\end{enumerate}
+The collection $\{\gamma_{t}\}_{t\in[-1,1]}$ is called a \emph{$1$–parameter sweep–out of $\Omega$}. Call a map $\Psi$, satisfying the above properties, a sweeping map of $\Omega$. 
+\end{definition}
+
+\begin{definition}[Family of Sweep-outs]
+Let
+\begin{align*}
+\mathbb{F}(\Omega):=\Bigl\{\{\gamma_t\}_{t\in[-1,1]}: \gamma_t = \Psi_t(\phi(\gamma_t^{*})) \text{ for some disc-like map } \phi \text{ and sweeping map } \Psi \Bigr\}.
+\end{align*}
+That is $\mathbb{F}$ consists of the set of all one-parameter sweep-outs of $\Omega$. 
+\end{definition}
+
+\begin{definition}[First width]
+The \emph{first width} of $\Omega$ is the infimum over all one-parameter sweep-outs of the maximum length curve in each sweep-out:
+\begin{equation}
+\omega_{1}(\Omega) := \inf_{\{\gamma_t\}\in \mathbb{F}(\Omega)} \sup_{{t\in[-1,1]}} \operatorname{Length}(\gamma_{t}).    
+\end{equation}
+\end{definition}
+
+\begin{lemma}\label{lem:sweep-is-surj}[Covering property]
+Let $\Omega$ be some disc-like region and fix an arbitrary disc-like map $\phi:D^2\to \Omega$ through which this can be achieved. For any sweeping map of $\Omega$, $\Psi$, one has that
+\begin{align*}
+\bigcup_{t\in[-1,1]} \Psi_t(\phi(\gamma_t^*)) \;=\; \Omega .
+\end{align*}
+\end{lemma}
+\begin{proof}
+Consider the height function $h:D^2\to[-1,1],$  $h(x,y) = y$, so that the reference 1-parameter family of curves are the level sets of the height function, $h^{-1}(t) = \gamma_t^*$. Let $p$ be an arbitrary point in $\Omega$ and define the function $F_p:[-1,1]\to [-1,1]$ by $F_p(t) = h\big(\phi^{-1}\big(\Psi_t^{-1}(p)\big)\big)$. Firstly, the mapping $t \mapsto \Psi_t^{-1}(p)$ is continuous as $G(t,x) = (t,\Psi_t(x))$ is by definition a continuous bijection from a compact space to a Hausdorff space, hence $G$ is a homeomorphism and so the inverse mapping for fixed $x=p$ is continuous. Because $\phi^{-1}$ and $h$ are continuous, $F_p$ is a well defined continuous function from $[-1,1]$ to $[-1,1]$. By the intermediate value theorem has a fixed point $t_0$, 
+\begin{align*}
+\Rightarrow& F_p(t_0)=t_0, \\
+\Rightarrow& h(\phi^{-1}(\Psi_{t_0}^{-1}(p)))=t_0, \\
+\Rightarrow& \phi^{-1}(\Psi_{t_0}^{-1}(p))\in h^{-1}(t_0) = \gamma_{t_0}^{*}.
+\end{align*}
+Thus $p$ is in the image of $\Psi_{t_0} \circ \phi$ on the reference curve $\gamma_{t_0}^*$. The choice of $p$ was arbitrary hence by this argument, every point in $\Omega$ lies on the image of $\Psi_{t} \circ \phi$ on the reference curve $\gamma_t^*$ for some $t \in [-1,1]$.
+\end{proof}
+\begin{remark}
+    In other words, sweep--outs leave no “gaps” - every point in the domain lies on at least one curve in the family.
+\end{remark}
+
+\begin{theorem}[Width of the Disc]
+The first width of the unit disc, $\omega_{1}(D^2) = 2$ and is realised by a diameter.
+\end{theorem}
+\begin{proof}
+The disc, $\Omega = D^2$, is clearly a disc-like region, which can be realised by any disc-like mapping such as $\phi=Id_{D^2}$. Now let $\phi:D^2\to D^2$ be an arbitrary disc-like mapping into the unit disc. By Lemma (\ref{lem:sweep-is-surj}), for all points $x\in D^2$ and sweep-outs $\{\gamma_t\}_{t\in[-1,1]} \in \mathbb{F}(D^2)$ there is a curve in the sweep-out on which $x$ sits. If $x\in \operatorname{Int}(D^2)$ then this curve doesn't sit wholly on the boundary of the disc. In particular, taking $x$ to be the origin, any such curve from the boundary to the origin and back to the boundary must be of at least the size of the diameter. Thus, for every sweep-out $\sup_{{t\in[-1,1]}}\operatorname{Length}(\gamma_t) \geq 2$, 
+\begin{equation}\label{ineq:lower-bound-d2}
+\Rightarrow \omega_1(D^2)\geq2.
+\end{equation}
+On the other hand, the reference 1-parameter family of curves, $\{\gamma_t^*\}_{t\in[-1,1]} \in \mathbb{F}(D^2)$, have 
+\begin{equation}\label{eq:attainment}
+\sup_{{t\in[-1,1]}}\operatorname{Length}(\gamma_t^*) = 2.
+\end{equation}
+Combining the lower bound (\ref{ineq:lower-bound-d2}) and its attainment (\ref{eq:attainment}), we have that $\omega_1(D^2)=2$.
+\end{proof}
+
+\section{The First Width of Convex Polygons}
+
+In the recent paper by Chodosh and Cholsaipant (\cite{Chodosh25}), it is shown that for a convex polygon $P \subset \mathbb{R}^2$, the first width satisfies
+\begin{equation}\label{eq:first-width}
+    \omega_1(P) = \inf_{|v|=1} \left( \max_{x \in P} x \cdot v - \min_{x \in P} x \cdot v \right).
+\end{equation}
+Geometrically, this is the minimal perpendicular distance between two parallel supporting lines of $P$, taken over all directions $v$. Our aim is to present a novel topological argument that proves this formula in the case of convex polygons. \\
+To build some intuition, consider the specific case of a triangle. Here equation (\ref{eq:first-width}) is equivalent to stating that the first width is the minimal perpendicular distance between any vertex–side pair, which reduces to the minimum of its altitudes. In our sweep–out framework, the boundary of the disc is mapped to $\partial P$, so the sweep–out endpoints trace paths along $\partial P$. Recording the angular positions of these endpoints (relative to a fixed interior point), yields two paths on the torus. The winding–number–$1$ condition from our definition of sweep–outs forces the concatenation of the counter–clockwise endpoint path with the reverse of the clockwise one to represent a specific nontrivial homotopy class in $\pi_1(\mathbb{T}^2)$. From this perspective, one can identify \emph{target sets} on the torus: closed loops corresponding to curves of different sweep--outs whose endpoints necessarily realise a certain length. Classical results on closed curves in the torus then guarantee that such target sets must be intersected by the endpoint path, giving a lower bound for the width.\\
+We now recall these results, which classify loops on the torus by their homotopy class and give criteria for when two such loops must intersect, before turning to the proof of the main theorem.
+
+\begin{definition}[Algebraic Intersection Number, \cite{Farb12}]
+Let $\alpha$ and $\beta$ be a pair of transverse, oriented, simple closed curves in $S$.
+The \emph{algebraic intersection number} $\widehat{i}=(\alpha, \beta)$ is defined as the sum of the indices of the intersection points of $\alpha$ and $\beta$. An intersection point is of index $+1$ when the orientation of the intersection agrees with the orientation of $S$ and is $-1$ otherwise. 
+\end{definition}
+
+\begin{proposition}[See \cite{Farb12}] \label{prop:AI-num-torus}
+The nontrivial homotopy classes of oriented simple closed curves in the torus, $T^2$, are isomorphic to $\mathbb{Z}^2$, $H_1(T^2;\mathbb{Z}) \cong \mathbb{Z}^2$. And for two homotopy classes of $T^2$, $(p, q)$ and $(p', q')$, we have that 
+\begin{align*}
+\widehat{i}((p, q),(p', q')) = pq' - p'q
+\end{align*}
+\end{proposition}
+
+\noindent To state the following lemma it will be useful to define precisely for convex polygons in the plane, the notion of “opposite sides”.
+\begin{definition}[Opposite Side]
+Let $P$ be a convex $n$-gon, then based on the parity of $n$, we have two notions of opposite side, in one case for a vertex and in the other case for an edge:
+\begin{itemize}
+    \item If $n=2k+1$ is odd then for a fixed vertex $V$ label the corners of $P$, clockwise, starting with $v_1$ at $V$ through to $v_n$. The opposite side of vertex $V$ is the edge $v_{k}v_{k+1}$.
+    \begin{figure}[ht]
+        \centering
+        \input{figures/odd_polygon_opposite_side.tex}
+        \caption{The opposite side of vertex $V$ when $n$ is odd.}
+    \end{figure}
+    \FloatBarrier
+    
+    \item If $n=2k$ is even then for a fixed edge $E$ label the corners of $P$, clockwise, starting with $1$ on the clockwise vertex of $E$ to $n$, so that $E=v_nv_1$. The opposite side of edge $E$ is the edge $v_{k}v_{k+1}$.
+    \begin{figure}[ht]
+        \centering
+        \input{figures/even_polygon_opposite_side.tex}
+        \caption{The opposite side of edge $E$ when $n$ is even.}
+    \end{figure}
+    \FloatBarrier
+\end{itemize}
+In general, when referring to the opposite side on a polygon, we will be referring to that of a vertex if the number of sides is odd and that of an edge if the number of sides is even.
+\end{definition}
+
+\begin{lemma}[Existence of Curve between Opposite Sides]\label{lem:polygon-width-ub}
+Let $P \subset \mathbb{R}^2$ be a compact convex polygon with an odd (respectively even) number of sides. Then, in any sweep--out $\{\gamma_t\}_{t \in [-1,1]}$ of $P$ there exists a parameter $t_*$ such that $\gamma_{t_*}$ joins a vertex $V$ (respectively an edge $E$) with its opposite side.
+\end{lemma}
+\begin{proof}
+Let $\{\gamma_t\}_{t\in[-1,1]} \in \mathbb{F}(P)$ be an arbitrary $1$-parameter sweep--out of $P$. For each $t$, denote by $a_t,b_t\in\partial P$ the image of the left and right endpoints of the reference chord $\gamma_t^*$, respectively. Fix $z_0\in\operatorname{Int} P$ and define the angular map
+\begin{align*}
+\Theta:\partial P\to S^1,\qquad \Theta(x)=\frac{x-z_0}{|x-z_0|}.
+\end{align*}
+\par\vspace{1em}
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \input{figures/odd_polygon_endpoints.tex}
+    \captionsetup{skip=8pt}
+    \caption{Odd case $n=2k+1$.}
+    \label{fig:odd}
+  \end{subfigure}\hfill
+  \begin{subfigure}{0.48\linewidth}
+    \centering
+    \input{figures/even_polygon_endpoints.tex}
+    \captionsetup{skip=16pt}
+    \caption{Even case $n=2k$.}
+    \label{fig:even}
+  \end{subfigure}
+  \caption{Sweep--out of a convex $n$–gon $P$. The red line realises the first width.}
+  \label{fig:opp-edges}
+\end{figure}
+\vspace{1em}
+
+\noindent Choose continuous lifts \footnote{By the path–lifting (and uniqueness) property for covering maps, any continuous map from an interval into $S^1$ lifts uniquely once the initial value is fixed (see Hatcher \cite{Hatcher02}).} (unwrapped angles)
+\begin{align*}
+\tilde \alpha,\tilde\beta:[-1,1]\to\mathbb{R} \quad\text{such that}\quad e^{i\tilde\alpha(t)}=\Theta(a_t),\ \ e^{i\tilde\beta(t)}=\Theta(b_t).
+\end{align*}
+These functions record the total angular change of the endpoints, counting multiple winds; their reductions modulo $2\pi$ are the usual polar angles $\alpha_t=\tilde\alpha(t) \bmod{2\pi}$ and $\beta_t=\tilde\beta(t) \bmod{2\pi}$. \\
+For a disc-like sweep--out, the relative winding satisfies
+\[
+\big(\tilde\alpha(1)-\tilde\alpha(-1)\big) - \big(\tilde\beta(1)-\tilde\beta(-1)\big) = 2\pi,
+\]
+so $\tilde\alpha-\tilde\beta$ increases by exactly $2\pi$.
+\begin{figure}[ht]
+    \centering
+    \input{figures/endpoint_angle_path.tex}
+    \caption{Polar angle $\Theta$ and lifts of endpoint angles, $\tilde{\alpha}(t)$ (orange) and $\tilde{\beta}(t)$ (teal).}
+\end{figure}
+\FloatBarrier
+
+\noindent \textbf{Endpoint Path on the Torus.} The path 
+\begin{align*}
+\lambda(t) = \big(e^{i\tilde\alpha(t)},\, e^{i\tilde\beta(t)}\big)
+\end{align*}
+lies in the flat square $[0,2\pi]\times[0,2\pi]$ with opposite sides identified - the torus $T^2$ - but is not generally closed. To obtain a closed loop encoding the same relative information, we define the path
+\begin{align*}
+\Lambda(t)\;=\;\big(e^{\,i(\tilde\alpha(t)-\tilde\beta(t))},\ e^{\,i(\tilde\beta(t)-\tilde\alpha(t))}\big)\in T^2 = S^1\times S^1.
+\end{align*}
+\noindent Since $\tilde\alpha-\tilde\beta$ increases by $2\pi$, the first coordinate of $\Lambda$ winds once positively around its $S^1$ factor, while the second coordinate winds once negatively. Thus $\Lambda$ wraps once in each factor but with opposite orientation, giving $[\Lambda]=(1,-1) \in H_1(T^2;\mathbb{Z})$. This homology class reflects the relative motion of the sweep–out endpoints: one winds once positively, the other once negatively.
+\begin{figure}[ht]
+    \centering
+    \input{figures/closed_loop.tex}
+    \caption{Endpoint path $\Lambda(t)$ on $T^2$.}
+\end{figure}
+\FloatBarrier
+
+\noindent \textbf{Target Set Path on the Torus.} 
+We now describe the subset of $T^2$ corresponding to curves that connect a vertex (respectively, an edge) to its opposite side:
+\begin{itemize}
+\item \emph{Odd $n$:} For each vertex $V_i$ with opposite side $E_{V_i}^{opp}$, the set
+\[
+\mathcal{R}_i := V_i\times E_{V_i}^{opp} \ \cup\ E_{V_i}^{opp}\times V_i
+\]
+is a line on $T^2$ representing endpoint pairs with one on $V_i$ and the other on $E_{V_i}^{opp}$.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/odd_target_loop.tex}
+    \caption{The collection $\cup_{i=1}^n \mathcal R_i$ forming a closed “staircase” loop on $T^2$.}
+\end{figure}
+\FloatBarrier
+
+\item \emph{Even $n$:} For each edge $E_i$ with opposite edge $E_{E_i}^{opp}$, the set
+\[
+\mathcal{R}_i := E_i\times E_{E_i}^{opp} \ \cup\ E_{E_i}^{opp}\times E_i
+\]
+is a rectangular patch on $T^2$ representing endpoint pairs with one on $E_i$ and the other on $E_{E_i}^{opp}$.
+\begin{figure}[ht]
+    \centering
+    \input{figures/even_target_loop.tex}
+    \caption{The collection of $\{\mathcal{R}_i\}_{i=1}^n$ (shaded) and the subset of their union (solid red) which forms the closed  “staircase” loop.}
+\end{figure}
+\FloatBarrier
+\end{itemize}
+In either case, the union of these pieces, $\mathcal{R}:=\cup_{i=1}^n\mathcal{R}_i$ is connected and homologically nontrivial (cannot be contracted to a point). From this union we may select a single closed “staircase” path in $T^2=S^1 \times S^1$, which can be smoothed to a loop $R$ - the target set. Traversing $R$ once follows the counter-clockwise order of edges in both endpoint coordinates simultaneously, so it winds once around each $S^1$ factor in the same direction. Thus $R$ has homology class $[R]=(1,1)$, recording that as a point $x$ traverses $\partial P$ once clockwise, a point constrained to lie on the side opposite of $x$ also makes one clockwise circuit of the perimeter. \\
+
+\noindent \textbf{Intersection argument.}
+By Proposition (\ref{prop:AI-num-torus}), the algebraic intersection of $(p,q)$ and $(p',q')$ in $T^2$ is \(\widehat{i}((p,q),(p',q')) = pq'-p'q\). Substituting $[\Lambda]=(1,-1)$ and $[R]=(1,1)$ gives
+\begin{align*}
+\widehat{i}\big([\Lambda],[R]\big)=\widehat{i}\big((1,-1),(1,1)\big)=2\neq0.
+\end{align*}
+Since the intersection number is nonzero, $\Lambda$ and $R$ must intersect in $T^2$.
+
+\noindent\textbf{Conclusion.}
+An intersection point corresponds to some $t_0$ such that $(a_{t_0},b_{t_0})$ lies in one of the above sets, i.e.\ $\gamma_{t_0}$ has one endpoint on a vertex $V$ or an edge $E$ and the other on its opposite side, as claimed.
+\end{proof}
+
+
+
+\begin{theorem}[First width of convex polygons]\label{thm:first-width-convex-polygon}
+For a compact convex polygon $P$ with $n$ sides, the first width is
+\begin{equation}\label{eq:first-width-convex-polygons}
+    \omega_1(P) = 
+    \begin{cases}
+        \displaystyle \min_{1\le i\le n}\ \operatorname{dist}\!\big(V_i,E_{V_i}^{\mathrm{opp}}\big), & \text{if $n$ is odd},\\
+        \displaystyle \min_{1\le i\le n}\ \operatorname{dist}\!\big(E_i,E_{E_i}^{\mathrm{opp}}\big), & \text{if $n$ is even}.
+    \end{cases}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+\textbf{Lower bound.} 
+By Lemma~\ref{lem:polygon-width-ub}, for any sweep--out 
+$\{\gamma_t\}_{t\in[-1,1]}$ of $P$ there exists $t_0$ such that:
+\begin{itemize}
+    \item if $n$ is odd, $\gamma_{t_0}$ joins some vertex $V_i$ to its opposite edge $E_{V_i}^{\mathrm{opp}}$;
+    \item if $n$ is even, $\gamma_{t_0}$ joins some edge $E_i$ to its opposite edge $E_{E_i}^{\mathrm{opp}}$.
+\end{itemize}
+In either case, $\gamma_{t_0}$ has length at least the perpendicular distance between the relevant vertex/edge and its opposite edge. Therefore,
+\[
+\sup_{t} \mathrm{Length}(\gamma_t) \;\ge\;
+\begin{cases}
+    \displaystyle \min_{1\le i\le n} \operatorname{dist}\!\big(V_i,E_{V_i}^{\mathrm{opp}}\big), & \text{if $n$ is odd},\\[0.8em]
+    \displaystyle \min_{1\le i\le n} \operatorname{dist}\!\big(E_i,E_{E_i}^{\mathrm{opp}}\big), & \text{if $n$ is even}.
+\end{cases}
+\]
+Taking the infimum over all sweep--outs, we obtain
+\[
+\omega_1(P) \;\ge\;
+\begin{cases}
+    \displaystyle \min_{1\le i\le n} \operatorname{dist}\!\big(V_i,E_{V_i}^{\mathrm{opp}}\big), & \text{if $n$ is odd},\\[0.8em]
+    \displaystyle \min_{1\le i\le n} \operatorname{dist}\!\big(E_i,E_{E_i}^{\mathrm{opp}}\big), & \text{if $n$ is even}.
+\end{cases}
+\]
+
+\medskip
+\noindent\textbf{Upper bound.} 
+Let $A$ be a vertex (if $n$ is odd) or an edge (if $n$ is even) attaining the above minimum, and let $E_A^{\mathrm{opp}}$ be its opposite edge. Let $L$ be the supporting line of $P$, parallel to $E_A^{\mathrm{opp}}$, which passes through $A$ by convexity of $P$. Consider the sweep--out $\{\gamma_t^0\}_{t\in[-1,1]}$ obtained by intersecting $P$ with lines \emph{perpendicular} to $E_A^{\mathrm{opp}}$. Each curve $\gamma_t^0$ is perpendicular to both $L$ and $E_A^{\mathrm{opp}}$ and is contained between them, hence
+\[
+\mathrm{Length}(\gamma_t^0) \leq \operatorname{dist}(L,E_A^{\mathrm{opp}})
+\quad \text{for all } t.
+\]
+Therefore
+\[
+\omega_1(P) \;\le\; \sup_t \mathrm{Length}(\gamma_t^0) 
+= \operatorname{dist}(L,E_A^{\mathrm{opp}}),
+\]
+and by the choice of $A$ this equals the right-hand side of~\eqref{eq:first-width-convex-polygons}.
+
+\noindent \textbf{Equality.} Combining the lower and upper bounds yields equality, as required.
+\end{proof}

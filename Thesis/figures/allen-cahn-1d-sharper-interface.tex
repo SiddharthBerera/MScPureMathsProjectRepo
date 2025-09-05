@@ -1,0 +1,32 @@
+\begin{tikzpicture}[scale=1]
+  % Title
+  \node[anchor=west] at (-6.1,3.0) {\small \textbf{(Bottom) As $\varepsilon \downarrow 0$, the layer shrinks and energy concentrates on $\Gamma$}};
+
+  % Domain rectangle
+  \draw[thick] (-6, -2) rectangle (6, 2);
+
+  % The same Gamma curve
+  \draw[name path=Gamma2, ultra thick] (-5.5,0.4) .. controls (-3,1.1) and (-1,-0.8) .. (1,0.3)
+                                       .. controls (2,0.8) and (3.5,-0.2) .. (5.5,0.6);
+
+  % A thinner band to represent smaller epsilon
+  \path[name path=GammaUp2] (-5.5,0.55) .. controls (-3,1.25) and (-1,-0.65) .. (1,0.45)
+                            .. controls (2,0.95) and (3.5,-0.05) .. (5.5,0.75);
+  \path[name path=GammaDn2] (-5.5,0.25) .. controls (-3,0.95) and (-1,-0.95) .. (1,0.15)
+                            .. controls (2,0.65) and (3.5,-0.35) .. (5.5,0.45);
+
+  \tikzfillbetween[of=GammaUp2 and GammaDn2]{gray,opacity=0.18};
+
+  % Energy concentration markers (short normal spikes on Gamma) 
+  \foreach \x/\y/\dx/\dy in {
+    -4.8/0.55/0.0/0.4, -3.6/0.95/0.0/0.35, -2.4/0.25/0.0/0.35,
+    -1.2/-0.35/0.0/0.35, 0.0/0.25/0.0/0.35, 1.2/0.45/0.0/0.35,
+    2.7/0.45/0.0/0.35, 4.2/0.35/0.0/0.35
+  }{
+    \draw[line width=0.4pt,opacity=0.5] (\x,\y) -- ++(0,0.22);
+  }
+
+  % Label
+  \node[above right] at (1.2,0.5) {$\Gamma$};
+  \node at (4,1.6) {$\text{energy} \;\propto\; \delta_{\Gamma}$ as $\varepsilon\!\downarrow\!0$};
+\end{tikzpicture}

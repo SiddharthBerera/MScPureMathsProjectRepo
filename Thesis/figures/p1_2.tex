@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+\begin{axis}[
+  view={-35}{25},
+  width=5.2cm, height=5.2cm,
+  xlabel={$x$}, ylabel={$y$}, zlabel={$z$},
+  xmin=0, xmax=1, ymin=0, ymax=1, zmin=0, zmax=1,
+  axis lines=box, tick align=outside
+]
+\addplot3[
+  patch, patch type=triangle,
+  fill=green!80!black, draw=black
+] coordinates {
+  (1,0,1)
+  (0,1,0)
+  (0,0,0)
+};
+\end{axis}
+\end{tikzpicture}

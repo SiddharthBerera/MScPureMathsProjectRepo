@@ -1,0 +1,53 @@
+\begin{tikzpicture}[scale=1.2, every node/.style={font=\small}]
+  % radii
+  \def\R{2.0}      % unit circle
+  \def\RoCW{2.35}  % radius for clockwise arc
+  \def\RoCCW{2.55} % radius for counterclockwise arc
+
+  % angles for the two points on S^1
+  \def\aStart{140}   % angle of \Theta(\gamma_{-1})
+  \def\aEnd{-30}     % angle of \Theta(\gamma_{1})
+
+  % unit circle
+  \draw[line width=1pt] (0,0) circle (\R);
+  % unit circle
+  \draw[line width=1pt] (0,0) circle (\R);
+  \fill (0,0) circle (1.2pt) node[labelbg,anchor=east,xshift=1em] {$O$}; % origin + label
+
+  % points and labels
+  \coordinate (A) at ({\R*cos(\aStart)},{\R*sin(\aStart)});
+  \coordinate (B) at ({\R*cos(\aEnd)},{\R*sin(\aEnd)});
+  \node[dot] at (A) {};
+  \node[dot] at (B) {};
+  \node[labelbg,anchor=south west] at ($(A)+(0.08,0.08)$) {$\Theta(\gamma_{1})$};
+  \node[labelbg,anchor=north east] at ($(B)+(-0.08,-0.08)$) {$\Theta(\gamma_{-1})$};
+
+  % CLOCKWISE arc from start to end (short way)
+  \draw[alphaArc]
+    ({\RoCW*cos(\aStart)},{\RoCW*sin(\aStart)})
+      arc[start angle=\aStart, end angle=\aEnd, radius=\RoCW];
+  \node[labelbg,anchor=south] at ({\RoCW*cos(\aStart-80)},{\RoCW*sin(\aStart-80)}) {$\tilde\alpha(t)$};
+
+  % COUNTERCLOCKWISE arc from start to end (long way = +360°)
+  \draw[betaArc]
+    ({\RoCCW*cos(\aStart)},{\RoCCW*sin(\aStart)})
+      arc[start angle=\aStart, end angle=\aEnd+360, radius=\RoCCW];
+  \node[labelbg,anchor=north] at ({\RoCCW*cos(\aStart+110)},{\RoCCW*sin(\aStart+110)}) {$\tilde\beta(t)$};
+
+  % --- dotted radii and labels at their intersections with S^1
+  \def\aStar{45}    % degrees for \tilde\alpha(t_*)
+  \def\bStar{200}   % degrees for \tilde\beta(t_*)
+
+  \coordinate (Astar) at ({\R*cos(\aStar)},{\R*sin(\aStar)});
+  \coordinate (Bstar) at ({\R*cos(\bStar)},{\R*sin(\bStar)});
+
+  % dotted lines from origin to the circle
+  \draw[dotted,line width=0.8pt] (0,0) -- (Astar);
+  \draw[dotted,line width=0.8pt] (0,0) -- (Bstar);
+
+  % labels slightly outside the circle along those directions
+  \node[labelbg,anchor=west]  at ($(0,0)!1.08!(Astar)$) {$\tilde{\alpha}(t_*)$};
+  \node[labelbg,anchor=east]  at ($(0,0)!1.08!(Bstar)$) {$\tilde{\beta}(t_*)$};
+
+  
+\end{tikzpicture}

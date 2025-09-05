@@ -1,0 +1,66 @@
+\begin{tikzpicture}[scale=1, every node/.style={font=\small},baseline=(current bounding box.north)]
+  % Parameters
+  \def\S{3.0} % same as square
+  \def\R{\S/(2*sin(180/5))}
+  \def\gap{0.75}   % spacing between diagonal bands
+  \def\thk{0.6pt}  % band thickness
+  \def\clr{black}  % band color
+  \def\slope{2}    % slope of bands
+
+  % Pentagon vertices (counterclockwise, start at top)
+  \foreach \i in {1,...,5}{
+    \coordinate (p\i) at ({\R*cos(90-72*\i)},{\R*sin(90-72*\i)});
+  }
+
+  % Bounding box
+  \path[use as bounding box] (-2.3,-2.3) rectangle (2.3,2.3);
+
+  % Pentagon path for clipping / intersections
+  \path[name path=poly] (p1)--(p2)--(p3)--(p4)--(p5)--cycle;
+  \draw[blue, line width=0.9pt] (p1)--(p2)--(p3)--(p4)--(p5)--cycle;
+
+  % Diagonal bands
+  \begin{scope}
+    \clip (p1)--(p2)--(p3)--(p4)--(p5)--cycle;
+    \foreach \k in {-3,-2,-1,0,2,3}{
+      \draw[\clr, line width=\thk]
+        ({-2.8+\k*\gap},-3.0) -- ++(6,{\slope*6});
+    }
+    % Highlight k=1 band
+    \draw[red, line width=\thk]
+      ({-2.8+1*\gap},-3.0) -- ++(6,{\slope*6});
+  \end{scope}
+
+  % Intersections of red band with pentagon
+  \coordinate (Lstart) at ({-2.8+1*\gap},-3.0);
+  \coordinate (Ldir)   at (6,{\slope*6});
+  \path[name path=redline] (Lstart) -- ($ (Lstart) + (Ldir) $);
+  \path[name intersections={of=poly and redline, by={Ione,Itwo}}];
+
+  % Reference point z0
+  \coordinate (z0) at (0.1,0.1);
+  \node[dot] at (z0) {};
+  \node[labelbg,anchor=west] at ($(z0)+(0.10,0)$) {$z_0$};
+
+  % Mark intersection points
+  \node[dot] at (Ione) {};
+  \node[dot] at (Itwo) {};
+  \node[labelbg,anchor=south] at ($(Ione)+(-0.35,-0.2)$) {$b_{t_\star}$};
+  \node[labelbg,anchor=north] at ($(Itwo)+(0.2,0.38)$) {$a_{t_\star}$};
+
+  % Label the red segment
+  \node[labelbg,anchor=south east] at ($(Ione)!0.5!(Itwo)$) {$\gamma_{t_\star}$};
+
+  % Dashed rays from z0
+  \draw[dashed, line width=0.5pt] (z0)--(Ione);
+  \draw[dashed, line width=0.5pt] (z0)--(Itwo);
+
+  % Optional gamma_1 and gamma_-1 points
+  \coordinate (gOne)   at (p4);
+  \coordinate (gMinus) at ($(p2)!0.5!(p1)$);
+  \node[dot] at (gOne) {};
+  \node[dot] at (gMinus) {};
+  \node[labelbg,anchor=south west] at ($(gOne)+(-0.5, -0.1)$) {$\gamma_{1}$};
+  \node[labelbg,anchor=west]       at ($(gMinus)+(0.10,0.00)$) {$\gamma_{-1}$};
+
+\end{tikzpicture}

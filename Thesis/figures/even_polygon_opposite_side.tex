@@ -1,0 +1,26 @@
+\begin{tikzpicture}[scale=1, every node/.style={font=\small}]
+  \def\R{1.4}
+  \coordinate (v1) at (-\R,-\R);
+  \coordinate (v2) at (\R,-\R);
+  \coordinate (v3) at (\R,\R);
+  \coordinate (v4) at (-\R,\R);
+
+  % polygon
+  \draw[blue, line width=0.8pt] (v1)--(v2)--(v3)--(v4)--cycle;
+
+  % corner labels (small offsets)
+  \node[below left]  at ($(v1)+(-0.02,-0.02)$) {$v_1$};
+  \node[below right] at ($(v2)+(0.02,-0.02)$) {$v_2$};
+  \node[above right] at ($(v3)+(0.02,0.02)$) {$v_3$};
+  \node[above left]  at ($(v4)+(-0.02,0.02)$) {$v_4$};
+
+  % choose E1 = v4--v1, opposite edge v2--v3
+  \draw[red, dashed, line width=0.9pt] (v4)--(v1);
+  \node[red,labelbg,anchor=east] at ($ (v4)!0.5!(v1) + (-0.10,0.10) $) {$E$};
+
+  \draw[red, dashed, line width=0.9pt] (v2)--(v3);
+  \node[red,labelbg,anchor=west] at ($ (v2)!0.5!(v3) + (0.10,0.10) $) {$E^{\mathrm{opp}}_{E}$};
+
+  % example connector
+  \draw[red] ($(v4)!0.3!(v1)$)--($(v2)!0.6!(v3)$);
+\end{tikzpicture}

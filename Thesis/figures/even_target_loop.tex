@@ -1,0 +1,31 @@
+\begin{tikzpicture}[scale=1, every node/.style={font=\small}]
+  \def\S{4.0} % side length of the square
+
+  % --- outer square
+  \draw[line width=0.9pt] (0,0) rectangle (\S,\S);
+
+  % --- equally spaced dotted lines (3 each direction for 4x4 grid)
+  \foreach \i in {1,2,3}{
+    \draw[dashed] (\i*\S/4,0) -- (\i*\S/4,\S);   % vertical
+    \draw[dashed] (0,\i*\S/4) -- (\S,\i*\S/4);   % horizontal
+  }
+
+  % --- staircase path (red) for 4x4 grid
+  \fill[red,opacity=0.2] (0,2*\S/4) rectangle (\S/4,3*\S/4);
+  \fill[red,opacity=0.2] (\S/4,3*\S/4) rectangle (2*\S/4,4*\S/4);
+  \fill[red,opacity=0.2] (2*\S/4,0) rectangle (3*\S/4,\S/4);
+  \fill[red,opacity=0.2] (3*\S/4,\S/4) rectangle (4*\S/4,2*\S/4);
+
+  \draw[red,line width=1.2pt]
+    (0,2*\S/4) -- (0,3*\S/4) -- (\S/4,3*\S/4) -- (\S/4,4*\S/4) --
+    (2*\S/4,4*\S/4);
+
+  \draw[red,line width=1.2pt]
+    (\S/4,0) -- (2*\S/4,0) -- (2*\S/4,\S/4) -- (3*\S/4,\S/4) -- 
+    (3*\S/4,2*\S/4) -- (4*\S/4,2*\S/4) -- (4*\S/4,3*\S/4);
+
+  % --- axis labels
+  \node at (-0.25,-0.25) {$0$};
+  \node at (\S+0.25,-0.25) {$2\pi$};
+  \node at (-0.35,\S+0.1) {$2\pi$};
+\end{tikzpicture}

@@ -1,0 +1,209 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mathematics Final Year Research Projects
+% LaTeX Template
+% Version 1.0 (31/01/24)
+%
+% This template has been adapted from: https://www.overleaf.com/latex/templates/imperial-college-report-template/wncnzptkhnbc
+% Students should feel free to adapt this template to their needs.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+% PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass[a4paper,11pt, twoside]{report}
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=1in,bottom=1in,left=1in,right=1in,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{afterpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{csquotes}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{lipsum}
+\usepackage{booktabs}
+\usepackage{import} 
+\usepackage{float} 
+\usepackage{placeins}
+
+\usepackage{subcaption}
+\captionsetup[subfigure]{skip=8pt}
+\captionsetup{skip=10pt}
+
+\usepackage{xcolor}
+\definecolor{oiOrange}{HTML}{E69F00}
+\definecolor{oiTeal}{HTML}{009E73}
+
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{tikz-3dplot-circleofsphere}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{backgrounds,fillbetween}
+\usepackage[utf8]{inputenc}
+
+\usetikzlibrary{calc, intersections}
+\usetikzlibrary{arrows.meta}
+\tikzset{
+    labelbg/.style={fill=white,inner sep=1pt,outer sep=0pt,rounded corners=1pt},
+    dot/.style={circle,fill=black,inner sep=1.2pt},
+    alphaArc/.style={draw=oiOrange, line width=1pt,{Stealth[length=2.4mm]}-},
+    betaArc/.style ={draw=oiTeal,   line width=1pt,{Stealth[length=2.4mm]}-}
+}
+\usetikzlibrary{shapes.misc}
+
+% Listings (for displaying code):
+\usepackage{listings}
+\lstset{
+    frame = single, 
+    framexleftmargin=15pt
+}
+
+\theoremstyle{definition}  % <-- 'definition' has upright text
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{remark}{Remark}[chapter]
+\newtheorem{example}{Example}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{properties}{Properties}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\newtheorem{conjecture}{Conjecture}[chapter]
+
+
+
+% Center figure captions:
+\usepackage{caption}
+\captionsetup[figure]{labelfont={bf},name={Figure},labelsep=quad}
+\captionsetup[table]{labelfont={bf},name={Table},labelsep=quad}
+
+
+% ----------- Algorithm2e setup
+\usepackage[ruled,vlined]{algorithm2e}
+\makeatletter
+\renewcommand{\SetKwInOut}[2]{%
+  \sbox\algocf@inoutbox{\KwSty{#2}\algocf@typo:}%
+  \expandafter\ifx\csname InOutSizeDefined\endcsname\relax% if first time used
+    \newcommand\InOutSizeDefined{}\setlength{\inoutsize}{\wd\algocf@inoutbox}%
+    \sbox\algocf@inoutbox{\parbox[t]{\inoutsize}{\KwSty{#2}\algocf@typo:\hfill}~}\setlength{\inoutindent}{\wd\algocf@inoutbox}%
+  \else% else keep the larger dimension
+    \ifdim\wd\algocf@inoutbox>\inoutsize%
+    \setlength{\inoutsize}{\wd\algocf@inoutbox}%
+    \sbox\algocf@inoutbox{\parbox[t]{\inoutsize}{\KwSty{#2}\algocf@typo:\hfill}~}\setlength{\inoutindent}{\wd\algocf@inoutbox}%
+    \fi%
+  \fi% the dimension of the box is now defined.
+  \algocf@newcommand{#1}[1]{%
+    \ifthenelse{\boolean{algocf@inoutnumbered}}{\relax}{\everypar={\relax}}%
+%     {\let\\\algocf@newinout\hangindent=\wd\algocf@inoutbox\hangafter=1\parbox[t]{\inoutsize}{\KwSty{#2}\algocf@typo\hfill:}~##1\par}%
+    {\let\\\algocf@newinout\hangindent=\inoutindent\hangafter=1\parbox[t]{\inoutsize}{\KwSty{#2}\algocf@typo:\hfill}~##1\par}%
+    \algocf@linesnumbered% reset the numbering of the lines
+  }}%
+\makeatother
+% --------- end algorithm2e setup
+
+% \bm allows typing bold math:
+\usepackage{bm}
+\usepackage[normalem]{ulem}
+
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\renewcommand*{\rmdefault}{bch}
+\renewcommand*{\ttdefault}{lmtt}
+\newcommand{\citationneeded}{\textcolor{red}{[citation-needed]}}
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+
+% Add bigger skip between paragraphs, makes reading easier:
+\setlength{\parskip}{0.5em}
+
+% Bibliography
+\usepackage[numbers, comma, square, sort&compress]{natbib}
+\bibliographystyle{abbrvunsrtnat.bst}
+
+%----------------------------------------------------------------------------------------
+% END OF DOCUMENT CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+% IMPORTANT INFORMATION TO MODIFY FOR THE TITLE PAGE
+%----------------------------------------------------------------------------------------
+\newcommand{\reporttitle}{Min--Max Methods for Computing Planar Widths and Connections to the Allen--Cahn PDE} % Title of your research project
+\newcommand{\reportauthor}{Siddharth Roshan Berera} % First Name and Last Name
+\newcommand{\reportcid}{01858742} % First Name and Last Name
+\newcommand{\reportyr}{2024-2025} % First Name and Last Name
+\newcommand{\supervisor}{Professor M. A. M. Guaraco} % First Name and Last Name of your supervisor(s)
+\newcommand{\degreetype}{MSc in Pure Mathematics} % MSci in Mathematics, BSc in Mathematics, BSc in Mathematics with Statistics, ...
+%----------------------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+% To compile this file, use the following sequence: 
+%	latex main.tex
+%	bibtex main.tex
+%	latex main.tex
+%	latex main.tex
+%----------------------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+% START OF DOCUMENT
+%----------------------------------------------------------------------------------------
+\setlength {\marginparwidth }{2cm} 
+\begin{document}
+
+% Title page
+\input{title/title.tex}
+
+% Abstract
+\begin{abstract}
+This dissertation develops a unified min--max framework connecting linear spectral theory, geometric widths and nonlinear PDEs. For linear operators, we construct spectra via a min--max scheme and show that the resulting critical points are determined by the topology of the underlying configuration space, yielding a form of topological invariance for min--max levels. In geometry, we formalise widths as nonlinear analogues of eigenvalues for length/area/volume functionals and prove that, for any convex polygon, the first width - an analogue of the second eigenvalue - equals the minimal supporting-line distance; the proof uses a novel and flexible topological argument that suggests extensions to broader width problems. Analytically, we realise widths as level sets of min--max solutions to the Allen--Cahn equation and implement a finite element scheme that computes nontrivial critical points. Together, these results show that min--max methods furnish a common framework for identifying fundamental invariants across linear, geometric and analytic settings, and that this framework is effective in computation.
+\end{abstract}
+ 
+% Acknowledgements
+\clearpage
+\section*{Acknowledgments}
+\noindent I am deeply grateful to Professor M.\ A.\ M.\ Guaraco for his guidance, ideas, and encouragement throughout this project. I also thank my parents for their constant support and for patiently listening to countless discussions of my ideas.
+\clearpage
+
+% Acknowledgements
+\clearpage
+\section*{Plagiarism statement}
+The work contained in this thesis is my own work unless otherwise stated. \\
+
+\vspace{1em}
+\noindent \textit{Signature:} \reportauthor \\
+\textit{Date:} \today
+\clearpage
+
+% Table of contents
+\tableofcontents
+
+% Main sections of the report
+% ===========================
+% Uncomment or add folders to add your own chapters and input files.
+
+\input{introduction/introduction.tex}
+\input{spectrum-of-matrices/linear.tex}
+\input{planar-widths/planar-widths.tex}
+\input{allen-cahn/allen-cahn.tex}
+\input{further-directions/further-directions.tex}
+
+
+\appendix
+\input{appendix/appendix1.tex}
+\input{appendix/appendix2.tex}
+\input{appendix/appendix3.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliography{bibliography.bib}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

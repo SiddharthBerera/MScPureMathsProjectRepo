@@ -1,0 +1,66 @@
+\begin{tikzpicture}[scale=1, every node/.style={font=\small},baseline=(current bounding box.north)]
+
+  % Parameters
+  \def\S{4.0}      % square size
+  \def\gap{0.75}   % spacing between diagonal bands
+  \def\thk{0.6pt}  % band thickness
+  \def\clr{black}  % band color
+  \def\slope{2}    % slope of bands
+
+  % --- Force bounding box to the square only
+  \path[use as bounding box] (0,0) rectangle (\S,\S);
+
+  % --- Outer square (torus fundamental domain)
+  \draw[blue, line width=0.9pt] (0,0) rectangle (\S,\S);
+
+  % --- Diagonal bands clipped to the square
+  \begin{scope}
+    \clip (0,0) rectangle (\S,\S);
+    \foreach \k in {-2,-1,0,2,3,4}{
+      \draw[\clr, line width=\thk]
+        ({\k*\gap},0) -- ++(\S+2*\gap, {\slope*(\S+2*\gap)});
+    }
+    \draw[red, line width=\thk]({1*\gap},0) -- ++(\S+1*\gap, {\slope*(\S+1*\gap)});
+  \end{scope}
+  
+
+  % --- Interior reference point z0
+  \coordinate (z0) at (2.05,2.05);
+  \node[dot] at (z0) {};
+  \node[labelbg,anchor=west] at ($(z0)+(0.10,0)$) {$z_0$};
+
+  % --- Main endpoints a_t, b_t
+  \coordinate (at) at (0.3,\S);      % top edge
+  \coordinate (bt) at (\S,0.25);      % right edge
+  \node[dot] at (at) {};
+  \node[labelbg,anchor=south west] at ($(at)+(-0.2,0.15)$) {$\gamma_{1}$};
+  \node[dot] at (bt) {};
+  \node[labelbg,anchor=west] at ($(bt)+(0.08,0.00)$) {$\gamma_{-1}$};
+
+  % --- Compute endpoints for k=1 band exactly on square boundary
+  % Square path
+  \path[name path=box] (0,0) rectangle (\S,\S);
+
+  % k=1 band start and direction
+  \coordinate (Lstart) at ({1*\gap},0);
+  \coordinate (Ldir)   at ({\S+2*\gap}, {\slope*(\S+2*\gap)});
+
+  % Define long line path
+  \path[name path=kone] (Lstart) -- ($ (Lstart) + (Ldir) $);
+
+  % Intersections with the square
+  \path[name intersections={of=box and kone, by={Ione, Itwo}}];
+
+  % Mark them
+  \node[dot] at (Ione) {};
+  \node[dot] at (Itwo) {};
+  \node[labelbg,anchor=north east] at ($(Ione)+(0.4,0.4)$) {$a_{t_\star}$};
+  \node[labelbg,anchor=south west] at ($(Itwo)+(-0.2,-0.5)$) {$b_{t_\star}$};
+  \node[labelbg,anchor=south east] at ($(Ione)!0.5!(Itwo)$) {$\gamma_{t_\star}$};
+
+
+  % --- Rays from z0 to a_t, b_t
+  \draw[dashed, line width=0.5pt] (z0)--(Ione);
+  \draw[dashed, line width=0.5pt] (z0)--(Itwo);
+
+\end{tikzpicture}

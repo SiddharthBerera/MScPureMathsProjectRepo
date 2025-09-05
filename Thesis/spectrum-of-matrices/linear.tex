@@ -1,0 +1,370 @@
+\chapter{Min--Max Methods for Computing the Spectrum of Linear Operators}
+\label{ch:2}
+% ==========================================================
+In this section we illustrate how min--max methods recover the spectrum of a linear operator, beginning with the classical case of real symmetric matrices. 
+The linear setting serves as a prototype: here eigenvalues can be computed by standard algebraic means, but the min--max approach reveals a deeper structure that later extends to nonlinear operators, where no closed-form diagonalisation exists.\\
+We recall the basic definitions. Let $A:\mathcal{H}\to\mathcal{H}$ be a linear operator on a Hilbert space $\mathcal{H}$ over a field $\mathbb{F}$.
+
+\begin{definition}[Eigenvectors and Eigenvalues]\label{eigen}
+A nonzero vector $\vec v \in \mathcal H$ is an \emph{eigenvector} of $A$ if there exists a scalar $\lambda \in \mathbb{F}$ such that 
+\begin{align*}
+A(\vec v) = \lambda \vec v.
+\end{align*}
+The scalar $\lambda$ is the corresponding \emph{eigenvalue}.
+\end{definition}
+
+\noindent To connect eigenvalues with a variational principle, we introduce the \emph{Rayleigh quotient}, a functional whose critical points are precisely eigenvectors. 
+
+\begin{definition} [Rayleigh Quotient]
+The Rayleigh Quotient associated with the linear operator $A$ is the function  
+\begin{align*}
+    R:\mathcal{H}\setminus\{0\}\to \mathbb{F}, \qquad
+R(\vec v) = \frac{\langle A\vec v, \vec v\rangle}{\langle \vec v, \vec v\rangle}.
+\end{align*}
+If $\vec{v}$ is an eigenvector with eigenvalue $\lambda$, then $R(\vec{v})=\lambda$.
+\end{definition}
+
+
+\section{The Spectral Theorem and Min--Max over Linear Subspaces}
+\noindent Specialising to $\mathcal{H} = \mathbb{R}^n$ with the standard inner product $\langle \cdot,\cdot\rangle$, we take $A:\mathbb{R}^n\to\mathbb{R}^n$ to be a real symmetric matrix. 
+Observe that $R$ is homogeneous of degree zero: for any $a \neq 0$, $R(a\vec v) = R(\vec v)$. Thus $R$ naturally descends to the unit sphere $S^{n-1}$, being constant along rays through the origin.
+Since $R(\vec v) = R(-\vec v)$, the quotient further descends from $S^{n-1}$ to real projective space $\mathbb{RP}^{n-1}$, the true natural domain of the Rayleigh quotient. We postpone the formal definition of $\mathbb{RP}^{n-1}$ until it is needed, but for now continue working with $S^{n-1}$.
+
+\noindent In the mountain-pass analogy, the Rayleigh quotient plays the role of the landscape, with eigenvalues appearing as critical heights.
+
+\noindent To make this framework precise, we must verify that the critical points of the Rayleigh quotient on $S^{n-1}$ coincide with the eigenvectors of $A$. This is the key step that connects the variational perspective with linear algebra, and it is formalised in the following lemma.
+
+\begin{lemma} \label{RayleighCPs}
+Let $A:\mathbb R^n \to \mathbb R^n$ be symmetric. A nonzero vector $\vec{v} \in \mathbb R^n$ is a critical point of the Rayleigh quotient $R$ if and only if $\vec{v}$ is an eigenvector of $A$, in which case $R(\vec{v})$ equals the corresponding eigenvalue.
+\end{lemma}
+\begin{proof}
+Differentiating $R$ with respect to $\vec{v}$ gives
+\begin{equation}\label{eq:RQgrad}
+   \nabla_{v} R = \frac{2A\vec{v}\langle \vec{v}, \vec{v} \rangle - 2\vec{v}\langle A\vec{v}, \vec{v} \rangle}{\langle \vec{v}, \vec{v} \rangle^2}. 
+\end{equation}
+Setting the gradient to $\vec{0}$ and solving for the critical points,
+\begin{align*}
+\frac{2A\vec{v}\langle \vec{v}, \vec{v} \rangle - 2\vec{v}\langle A\vec{v}, \vec{v} \rangle}{\langle \vec{v}, \vec{v} \rangle^2} = \vec{0}, \\
+\Leftrightarrow A\vec{v} = \frac{\langle A \vec{v},\vec{v}\rangle}{\langle \vec{v}, \vec{v} \rangle} \vec{v}, \\
+\Leftrightarrow A\vec{v} = R(\vec{v})\vec{v}. \\
+\end{align*}
+By Definition (\ref{eigen}) of eigenvectors and eigenvalues, this has solutions for $\vec{v}$ which are precisely the eigenvectors of $A$ and with the value of $R$ being the corresponding eigenvalues.
+\end{proof}
+
+\noindent Thus the “mountains” are realised as critical levels of $R$. The landscape is further clarified by the relation between different peaks: eigenvectors associated with distinct eigenvalues do not tilt toward each other but instead lie in perpendicular directions. This orthogonality is formalised in the next lemma. 
+
+\begin{lemma} \label{eigenvec_perp}
+If $\vec{v}_i, \vec{v}_j \in \mathbb{R}^n$ ($i\neq j$) are eigenvectors of the symmetric matrix $A:\mathbb{R}^n\rightarrow\mathbb{R}^n$, with distinct eigenvalues $\lambda_i, \lambda_j \in \mathbb{R}$, respectively then $\vec{v}_i \perp \vec{v}_j$.
+\end{lemma}
+\begin{proof}
+Since $\vec{v}_i, \vec{v}_j$ are eigenvectors with corresponding eigenvalues $\lambda_i, \lambda_j$ by definition (\ref{eigen}) we have that $A\vec{v}_i = \lambda_i \vec{v}_i$ and $A\vec{v}_j = \lambda_j \vec{v}_j$. Thus, 
+\begin{align*}
+\langle \lambda_i\vec{v}_i, \vec{v}_j \rangle = \langle A\vec{v}_i, \vec{v}_j \rangle &= \langle \vec{v}_i, A\vec{v}_j \rangle = \langle \vec{v}_i, \lambda_j\vec{v}_j \rangle, \\
+\Rightarrow \lambda_i = \lambda_j \quad &\text{or} \quad \langle\vec{v}_i,\vec{v_j}\rangle = 0.
+\end{align*}
+Since $\lambda_i\neq \lambda_j$, we conclude that $\langle \vec{v}_i, \vec{v}_j \rangle = 0$.
+\end{proof}
+
+\noindent Orthogonality ensures that eigenvectors associated with distinct eigenvalues span mutually perpendicular directions. This orthogonal structure allows us to iteratively ‘peel away’ subspaces: once $k$ eigenvectors are known, minimising the Rayleigh quotient on their orthogonal complement reveals the next eigenvector. The following lemma makes this precise.
+
+\begin{lemma} \label{lemma23}
+Let $\vec{v}_1,\cdots, \vec{v}_k \in \mathbb{R}^n$, $k<n$, be a set of eigenvectors of the symmetric matrix $A:\mathbb{R}^n\rightarrow\mathbb{R}^n$ and denote by $L_k :=span\{\vec{v}_1,\cdots, \vec{v}_k\}$. The minimiser of the Rayleigh Quotient over the orthogonal complement $L_k^{\perp}$ is a new eigenvector.
+\end{lemma}
+\begin{proof}
+To prove this, we restrict the Rayleigh quotient to the orthogonal complement of the first $k$ eigenvectors. The idea is that minimising on this smaller space yields a new critical point, and hence a new eigenvector. Let $$\mathcal{M}:=\{\vec{x}\in L_{k}^{\perp}:||\vec{x}||=1\},$$ be the submanifold of the domain of $R$, $S_{n-1}$, in the orthogonal complement. 
+
+\begin{figure}
+    \centering
+    \input{figures/sphereDiagram.tex}
+    \caption{The submanifold $\mathcal{M} = S^{n-1} \cap L_k^\perp$ (green, a great circle in this $3$--dimensional illustration) together with its orthogonal components.}
+    \label{fig:placeholder}
+\end{figure}
+\FloatBarrier
+
+\noindent Note firstly that since $k<n$, the orthogonal complement and thus $\mathcal{M}$ are not empty, and secondly that minimising $R$ on $\mathbb{R}^n\setminus\{\vec{0}\}$ is equivalent to minimising on the compact set $\mathcal{M}$ (by scale invariance). Define also the tangent space to $\mathcal{M}$ at $\vec{u}$, $$T_{\vec{u}}\mathcal{M} = \{ \vec{{w}\in L_k^{\perp} } : \langle \vec{w},\vec{u}\rangle = 0\}.$$ Since the map $R|_{\mathcal{M}}: \mathcal{M} \rightarrow \mathbb{R}$ is continuous it attains its minimum on $S$ at some unit vector $\vec{u}\in L_{k}^{\perp}$.  Let $$\lambda:=R(\vec{u}) = \min_{\vec{x}\in \mathcal{M}} R(\vec{x}).$$ We proceed to show that $\vec{u}$ is a critical point of $R$. \\
+
+\textbf{Claim 1: $\nabla R(\vec{u}) \perp \vec{u}$.} \\
+Since $R$ is scale invariant and thus constant along the ray through the origin, its directional derivative along $\vec{u}$ vanishes identically. \\
+
+\textbf{Claim 2: $\nabla R(\vec{u}) \perp \mathcal{M}$.} \\
+Since $\vec{u}$ is the minimiser of $R$ in $\mathcal{M}$, a smooth submanifold of $S^{n-1}$ with no boundary, it is a critical point of $R$ restricted to $\mathcal{M}$ and so its gradient projected onto any vector $\vec{w} \in T_{\vec{u}}\mathcal{M}$ is $0$. \\
+
+\textbf{Claim 3: $\nabla R(\vec{u}) \perp L_k$.} \\
+By Equation (\ref{eq:RQgrad}) for the gradient of the $R$ and noting that $||\vec{u}||=1$, we have for any of the $v_j$s the following, $$\langle \nabla R(\vec{u}), \vec{v}_j \rangle = \langle 2A\vec{u} - 2\vec{u}\langle A\vec{u}, \vec{u} \rangle, \vec{v}_j\rangle.$$ Since $\vec{u}\perp\vec{v}_j$ as they live in each others orthogonal complements, $$\langle \nabla R(\vec{u}), \vec{v}_j \rangle = \langle 2A\vec{u}, \vec{v}_j\rangle = 2\langle \vec{u}, A\vec{v}_j\rangle = 2\langle \vec{u}, \lambda_j\vec{v}_j\rangle,$$ which once again is zero as $\vec{u}$ and $\vec{v}_j$ are orthogonal to one and other. Thus $\langle \nabla R(\vec{u}), \vec{v}_j \rangle = 0$ for each $j \in \{1,\cdots,k\}$ and so $\langle \nabla R(\vec{u}), \vec{z} \rangle = 0$ for any $\vec{z} \in L_k$. \\
+
+\noindent Finally, since $$\mathbb{R}^n = \text{span}\{\vec{u}\} \oplus T_{\vec{u}}\mathcal{M} \oplus L_k,$$
+
+\noindent the gradient vanishes in every direction, so $\vec u$ is a genuine critical point of $R$ in the whole domain $S^{n-1}$ (not just in $\mathcal{M}$). By Lemma (\ref{RayleighCPs}) we have then that the minimiser of $R$ over $\mathcal{M}$, $\vec{u}$, is indeed an eigenvector of $A$ as claimed.
+\end{proof}
+
+\noindent In the mountain pass dictionary, this shows that restricting to orthogonal complements corresponds to seeking new ‘passes’ beyond the previously discovered peaks. Each minimisation step forces us onto a new mountain ridge, yielding a fresh eigenvalue. This completes the min–max step: having shown that minimising on orthogonal complements generates new eigenvectors, we are now ready to assemble these ingredients into the spectral theorem.
+
+\begin{theorem}[Spectral theorem over $\mathbb R$]\label{SpectralThm}
+Every real symmetric matrix $A\in\mathbb R^{n\times n}$ has an orthonormal basis of eigenvectors. Equivalently, there exist an orthogonal $Q$ and a real diagonal $D$ with $A=QDQ^{\top}$.
+\end{theorem}
+\begin{proof}
+\textbf{Step 1: existence of at least one eigenvector.}
+Consider the Rayleigh quotient, $R$ associated with $A$ on the unit sphere $S^{n-1}$.  Since $S^{n-1}$ is compact and $R$ is smooth on this domain, it attains a minimum (and a maximum) on $S^{n-1}$ at some $\vec{u}\in S^{n-1}$. Since minimising a smooth function on a smooth constraint set (the unit sphere), any global minimiser is a local minimiser and so a critical point of the function. By Lemma (\ref{RayleighCPs}), $\vec{u}$ is a critical point of $R$, hence an eigenvector of $A$.
+
+\textbf{Step 2: induction.}
+Let $\vec{v}_{1}$ be a unit eigenvector found in Step~1.  Suppose we have found $k<n$ \emph{orthonormal} eigenvectors $\vec{v}_{1},\dots,\vec{v}_{k}$ of $A$. Set $L_{k}=\operatorname{span}\{\vec{v}_{1},\dots,\vec{v}_{k}\}$ and consider its orthogonal complement $L_{k}^{\perp}$.  By Lemma (\ref{eigenvec_perp}) the $v_{j}$ are mutually orthogonal, so $\dim L_{k}^{\perp}=n-k\ge1$. Minimise $R$ on the compact set $S_{k}:=\{\vec{x}\in L_{k}^{\perp}:\|\vec{x}\|=1\}$, noting that by Lemma (\ref{lemma23}) a minimiser $\vec{v}_{k+1}$ exists and is an eigenvector of $A$ and, by construction, $\vec{v}_{k+1}\perp L_{k}$; normalise it to have unit length. By Lemma (\ref{eigenvec_perp}), $\vec{v}_{k+1}$ is orthogonal to each $\vec{v}_{j}$, $j\le k$. Thus we can extend the orthonormal eigenfamily by one vector.  Iterating, after $n$ steps (see remark \ref{rem:repeated-eigen}) we obtain orthonormal eigenvectors $\vec{v}_{1},\dots,\vec{v}_{n}$, which form an orthonormal basis of $\mathbb R^{n}$. Adding any more eigenvectors would not be possible as by Lemma (\ref{eigenvec_perp}) they must all be mutually orthogonal and at most $n$ vectors in $\mathbb{R}^n$ can satisfy this.
+
+\textbf{Step 3: diagonalisation.}\label{step:diagonalisation}
+Let $Q=[\vec{v}_{1}\ \cdots\ \vec{v}_{n}]$ (orthonormal) and $D=\operatorname{diag}(\lambda_{1},\dots,\lambda_{n})$ with $A\vec{v}_{j}=\lambda_{j}v_{j}$. Then $AQ=QD$, hence $A=QDQ^{\top}$.
+\end{proof}
+\begin{remark}\label{rem:repeated-eigen}
+If an eigenvalue has multiplicity $m>1$, the procedure will return $m$ independent eigenvectors for it before proceeding to the next eigenvalue. These can be orthogonalised, so the construction still yields a total of $n$ orthonormal eigenvectors with the process having fewer iterations and more eigenvectors for some of those iterations.
+\end{remark}
+
+
+\subsection{From Courant--Fischer to the Mountain Pass Principle}
+The inductive argument in Theorem (\ref{SpectralThm}) repeatedly applied the algorithm behind the proof of Lemma (\ref{lemma23}): given eigenvectors for the $k$ smallest eigenvalues, minimise the Rayleigh quotient in the orthogonal complement to discover the next one. This iterative algorithm can be summarised and sharpened in via the Courant--Fischer theorem.
+
+\begin{theorem}[Courant--Fischer Min--Max \cite{Bhatia97}]\label{CourantFischer}
+ Assume the eigenvalues of the real symmetric matrix $A$ are ordered $\lambda_1 \leq \cdots \leq \lambda_n$, with corresponding orthonormal eigenbasis $\{\vec{w}_1,\cdots,\vec{w}_n\}$. The eigenvalues of $A$ admit the following min-max characterisation: $$\lambda_k=\min_{\substack{L\subset \mathbb{R}^n\\ \dim L = k}} \max_{\substack{\vec{v}\in L\\ \vec{v}\neq 0}} R(\vec{v}).$$
+\end{theorem}
+\begin{proof}
+Let $k \in \{ 1,..., n\}$ be fixed.
+
+\textbf{Step 1: Upper Bound for $\lambda_k$.}
+Pick the particular $k$-dimensional subspace $L_0=span\{\vec{w}_{1}\ \cdots\ \vec{w}_{k}\}$, then for $\vec{z} \in L_0$ we can write $\vec{x} = \sum_{i=1}^{k} \alpha_i \vec{w_i}$ and,
+\begin{align*}
+R(\vec{z}) = \frac{\langle A\vec{z}, \vec{z} \rangle}{\langle \vec{z}, \vec{z} \rangle} &= \frac{\langle \sum_{i=1}^k \alpha_i A\vec{w_i}, \sum_{i=1}^k \alpha_i\vec{w_i} \rangle}{\langle \sum_{i=1}^k \alpha_i\vec{w_i}, \sum_{i=1}^k \alpha_i\vec{w_i} \rangle} = \frac{\langle \sum_{i=1}^k \alpha_i \lambda_i\vec{w_i}, \sum_{i=1}^k \alpha_i\vec{w_i} \rangle}{\langle \sum_{i=1}^k \alpha_i\vec{w_i}, \sum_{i=1}^k \alpha_i\vec{w_i} \rangle}, \\
+\Rightarrow R(\vec{z}) &= \frac{\sum_{i=1}^k\alpha_i^2 \lambda_i}{\sum_{i=1}^k \alpha_i^2} \leq \lambda_k.
+\end{align*}
+Thus $\max_{\vec{z}\in L_0} R(\vec{z}) \leq \lambda_k$ and so 
+\begin{equation}\label{UpperBound}
+\min_{\substack{\dim L = k}} \max_{\substack{\vec{v}\in L \\ \vec{v}\neq 0}} R(\vec{v}) \leq \lambda_k.
+\end{equation}
+
+\textbf{Step 2: Lower Bound for $\lambda_k$.}
+Let $L$ be any $k$-dimensional subspace. Set $H:=span\{\vec{w}_k,\cdots,\vec{w}_n\}$ (dimension $n-k+1$).
+By the dimension formula,
+\[
+dim(L\cap H) \geq dim(L) + dim(H) - n = k + (n-k+1) - n = 1,
+\]
+so there exists nonzero $\vec{z}\in L\cap H$. As $\vec{z}\in H$ we can write it as $\vec{z} = \sum_{i=k}^n \alpha_i \vec{w_i}$. Then, 
+\[
+R(\vec{z}) = \frac{\sum_{i=k}^n\alpha_i^2 \lambda_i}{\sum_{i=k}^n \alpha_i^2} \geq \lambda_k,
+\]
+so $\max_{\vec{v}\in L} R(\vec{v}) \geq  \lambda_k$ for any $k$-dimensional $L$. This implies that, 
+\begin{equation}\label{LowerBound}
+\min_{\substack{\dim L = k}} \max_{\substack{\vec{v}\in L \\ \vec{v}\neq 0}} R(\vec{v}) \geq \lambda_k.
+\end{equation}
+Finally, combining the inequalities (\ref{UpperBound}) and (\ref{LowerBound}), we have the desired equality.
+\end{proof}
+
+\noindent\textbf{Link to the mountain-pass picture.}
+The Courant--Fischer theorem realises the mountain–pass analogy in exact algebraic form.  
+\begin{itemize}
+    \item The \textbf{space of points} is again the sphere $S^{n-1}$.  
+    \item A $k$-dimensional subspace $L$ plays the role of a \textbf{$k$-parameter family}, a constrained region through which one must pass.  
+    \item The \textbf{functional} is the Rayleigh quotient $R(\vec v)$.  
+    \item The \textbf{mountains} are the eigenvalues: for any choice of $L$, one cannot avoid climbing to at least the level $\lambda_k$.  
+\end{itemize}
+Thus the $k$-th eigenvalue is exactly the critical height of the lowest unavoidable pass across all $k$-dimensional routes. This interpretation highlights why min–max methods, first glimpsed here in the linear setting, extend so naturally to nonlinear PDEs and variational problems.
+
+
+\section{Homology as a Robust Alternative to Linear Subspaces}\label{section:cyclesboundaries}
+So far, our min--max characterisations of eigenvalues (Theorems~\ref{SpectralThm} and \ref{CourantFischer}) have used $k$-dimensional \emph{linear} subspaces as test families, which is exactly right for the \emph{linear} setting. In the next chapter, however, we study \emph{nonlinear} functionals (e.g. length), where the configuration space lacks a natural linear test structure and linear subspaces are too rigid to enforce the global obstruction required for a nontrivial critical point. In that nonlinear settings, the appropriate notion of “$k$ degrees of freedom” is \emph{topological} rather than linear: one works with $k$-parameter sweep--outs (continuous families) organised by a nontrivial homology class, so the family cannot be contracted without crossing a high energy level (e.g. value of Rayleigh Quotient or length) - just as any path crossing a mountain range must climb up to at least the height of the lowest pass.\\
+We could think of linear spaces as sitting at the top of a chain of increasingly structured spaces:
+\begin{itemize}
+    \item Topological spaces encode only continuity,
+    \item Metric spaces add a relative notion of distance between points,
+    \item Normed vector spaces give absolute size of vectors to those points,
+    \item Hilbert spaces further encode orthogonality.
+\end{itemize}
+Our previous min–max principles depended on the richest setting - Hilbert space geometry - but min–max arguments in fact only need topological control. Homology provides exactly this: it captures topological degrees of freedom by recording how $k$-dimensional cycles can sweep through a space without bounding. These invariants only rely on a topological test structure, therefore provide a natural replacement for linear subspaces.\\
+Rephrased in this language, the Courant--Fischer theorem says: each $k$-dimensional subspace determines a $k$-parameter sweep-out of the sphere, and the $k$-th eigenvalue arises as the unavoidable maximum of the Rayleigh quotient along this family. In geometric settings — for example, in defining planar width — the same philosophy applies, but the sweep-outs are not linear subspaces: they are submanifolds that represent nontrivial homology classes.\\
+In the following sections we will reformulate spectra by replacing “taking the maximum over a $k$-dimensional subspace” with “taking the maximum over a $k$-parameter family (sweep-out) that represents a nontrivial class in homology.”
+This shift mirrors the mountain–pass picture: just as eigenvalues arise from unavoidable ridges, homology forces the functional to admit critical values that cannot be avoided. In this way, the variational structure behind eigenvalues is extended from linear algebra into Morse-theoretic topology, preparing the ground for spectral problems involving nonlinear operators.
+
+\begin{definition}[Cycles and boundaries]\label{cycles_n_boundaries}
+Let $(C_{*}(X;k),\partial_{*})$ be the singular chain complex (see Appendix (\ref{MorseTheoryAppendix}) for the definitions of singular-m chains and the singular chain complex) of a topological space $X$ with coefficients in a ring $k$.  
+The $m$-cycles and $m$-boundaries are
+\[
+   Z_m(X;k) := \ker(\partial_m:C_m\to C_{m-1}),
+   \qquad
+   B_m(X;k) := \operatorname{im}(\partial_{m+1}:C_{m+1}\to C_m).
+\]
+Thus cycles are chains with vanishing boundary, and boundaries are those that themselves bound a higher-dimensional chain.
+\end{definition}
+
+\begin{definition}[Homology Groups]
+Let $\sim_m$ be the equivalence relation on $Z_m(X;k)$ defined by $c_1 \sim_m c_2 \Leftrightarrow c_1-c_2 \in B_m(X;k)$.
+The $m$‑th homology group is the quotient
+\[H_{m}(X;k)\;=\;Z_{m}(X;k)\big/\sim_m,\]
+namely the equivalence classes of $m$-cycles modulo those that bound higher‑dimensional chains.
+\end{definition}
+
+
+\begin{example}[Homology Groups of $S^1$]\label{H(S1)}
+Think of $H_1(S^1)$ as recording how many times a loop winds around the circle: counter-clockwise windings count positively, clockwise negatively. Concatenating two loops adds their winding numbers, so the group is isomorphic to $\mathbb Z$. Higher homology groups vanish as a $2$-dimensional surface wrapped around $S^1$ can always be slid off and contracted to a point.  
+\end{example}
+
+\begin{example}[Homology Groups of $S^2$]
+On the sphere, every loop bounds a disc (e.g.\ the equator bounds two hemispheres), so $H_1(S^2)=0$. This illustrates a key idea: loops contractible to a point carry no topological information. By contrast, the whole surface of the sphere generates $H_2(S^2)\cong\mathbb Z$, just as winding around $S^1$ generates $H_1(S^1)$.  
+\end{example}
+
+
+\begin{definition}[Betti numbers]
+Let \(X\) be a topological space and \(k=\mathbb{Z}_2\)
+\footnote{Working over $\mathbb{Z}_2$ removes orientation issues: $+1\equiv-1$, so signs in the boundary map and in intersection/flow counts disappear, and no global choice of orientations is needed.} be the coefficient field. Because homology with field coefficients is a vector space (Lemma \ref{lem:A1}), each group
+$H_{m}(X;\mathbb{Z}_2)$ has a well‑defined dimension. Define this as,
+
+\[
+\beta_{m}(X)
+\;:=\;
+\dim_{k}\! \bigl( H_{m}(X;\mathbb{Z}_2) \bigr)
+\qquad (m = 0,1,2,\dots)
+\]
+The non‑negative integer \(\beta_{m}(X)\) is called the
+\emph{$m$‑th Betti number} of \(X\).
+Informally it counts the number of independent
+\(m\)-dimensional “holes”:
+
+\begin{itemize}
+  \item \(\beta_{0}\)= number of path–connected components;
+  \item \(\beta_{1}\)= number of independent 1‑dimensional loops/tunnels;
+  \item \(\beta_{2}\)= number of independent voids bounded by 2‑spheres;  
+        and so on.
+\end{itemize}
+\end{definition}
+
+\subsection{Morse Functions and the Weak Morse Inequality}
+
+\begin{definition}[Morse function]
+  Let $M$ be a smooth manifold.  
+  A smooth map \(f \colon M \to \mathbb R\) is called a \emph{Morse function} if every critical point $\vec{p}\in M$ is non-degenerate, i.e. its Hessian matrix, $H_M(\vec{p}):=\nabla^2 f(\vec{p})$, is invertible.
+  When this holds, each critical point has a well-defined \emph{Morse index},
+  the number of negative eigenvalues of $H_M(\vec{p})$.
+\end{definition}
+
+\begin{theorem}[Weak Morse Inequality \cite{Milnor69}] \label{MorseIneq}
+Let $M$ be a compact manifold and let $f:M\rightarrow R$ be a Morse function. Denote by $c_k \in \mathbb{N}$ the number of critical points of $f$ with index $k$, on $M$. Then,
+$$\beta_k(M) \leq c_k.$$
+\end{theorem}
+
+\noindent We now return to our previous comment about the Rayleigh Quotient living in the real projective space and outline how Theorem (\ref{MorseIneq}) could be used to prove the spectral theorem for real symmetric matrices in a way that could better generalise to the case of nonlinear operators.
+
+\begin{definition}[Real Projective Space \cite{Hatcher02}]
+Let $\sim$ be the equivalence relation on $\mathbb{R}^{n+1}$ defined by $\vec{x} \sim \vec{y} \Leftrightarrow \exists \lambda \in \mathbb{R} \setminus \{0\}, \vec{x} = \lambda \vec{y}$.
+The Real Projective Space in $n$ dimensions, $\mathbb{RP}^n$, is the set of equivalence classes of $\mathbb{R}^{n+1} \setminus \{0\}$ quotiented by $\sim$.
+\end{definition}
+
+\begin{example}[$\mathbb{RP}^1 \cong S^1$]
+$\mathbb{RP}^1 = \bigl(\mathbb{R}^2\setminus\{0\}\bigr)\big/\!\bigl(x\sim \lambda x\bigr)$ so for each equivalence class of $\sim$ we can choose the representing member to be on $S^1$, in the top half of the plane except the points $(-1,0)$ and $(1,0)$ which we identify with each other, effectively creating a closed loop isomorphic to $S^1$. With example (\ref{H(S1)}) in mind we can compute the Betti numbers, 
+\[
+   \beta_k(\mathbb{RP}^1)
+   \;=\;
+   \begin{cases}
+     1, &  k=0\text{ or }1,\\[2pt]
+     0, & otherwise.
+   \end{cases}
+\]
+\end{example}
+\begin{remark}
+We previously hinted to the fact that the Rayleigh Quotient for a real symmetric matrix $A\in \mathbb{R}^{n\times n}$ is constant along lines through the origin and in fact we will now consider $R$ as a function from the compact manifold $\mathbb{RP}^{n-1}$ to $\mathbb{R}.$
+\end{remark}
+
+\begin{theorem}
+The nontrivial Homology groups of $\mathbb{RP}^n$ with coefficients in $\mathbb{Z}_2$ are, 
+\[
+   H_{k}\!\bigl(\mathbb{RP}^{n};\mathbb Z_{2}\bigr)
+   \;=\;
+   \begin{cases}
+     \mathbb Z_{2}, & 0\le k\le n,\\[2pt]
+     0,             & k>n,
+   \end{cases}
+\] 
+hence the Betti numbers are, 
+\[
+   \beta_{k}\bigl(\mathbb{RP}^{n}\bigr)=
+   \dim_{\mathbb Z_{2}} H_{k}(\mathbb{RP}^{n};\mathbb Z_{2})
+   =
+   \begin{cases}
+     1, & 0\le k\le n,\\[2pt]
+     0, & k>n.
+   \end{cases}
+\]
+\end{theorem}
+
+\begin{proposition}\label{prop:MorseCPs}
+A Morse function $f:\mathbb{RP}^{n}\to\mathbb R$ has at least $n+1$ distinct critical points.
+\end{proposition}
+\begin{proof}
+Denote by $c_{k}$ the number of its critical points of index~$k$. The weak Morse inequality (\ref{MorseIneq}) gives,
+\[
+   c_{k}\ \ge\ \beta_{k}\bigl(\mathbb{RP}^{n}\bigr),
+   \qquad k=0,1,\dots,n .
+\]
+Summing these inequalities we obtain,
+\begin{equation}\label{MorseIneqRPn}
+    \#\{\text{critical points of }f\}
+   =\sum_{k=0}^{n} c_{k}
+   \;\ge\;
+   \sum_{k=0}^{n} \beta_{k}(\mathbb{RP}^{n})
+   = n+1.
+\end{equation}
+Thus, every Morse function on $\mathbb{RP}^{n}$ must have at least $n+1$ critical points.
+\end{proof}
+\begin{remark}
+The nontrivial homology of $\mathbb{RP}^{n-1}$ forces at least $n$ distinct critical levels of the Rayleigh quotient, corresponding to the $n$ eigenvalues of a real symmetric matrix.
+\end{remark}
+
+
+\noindent With our Morse theoretic machinery in place, we can now pose and answer a key question about the spectra of a real symmetric matrix: “does it have repeated eigenvalues?”
+
+
+
+\begin{proposition}[Rayleigh quotient is Morse iff simple spectrum]\label{prop:MorseSS}
+Let $A\in\mathbb R^{n\times n}$ be symmetric and consider the Rayleigh Quotient, $R:\mathbb{RP}^{n-1}\rightarrow\mathbb{R}$, regarded as a function on $S^{n-1}$ (equivalently on $\mathbb{RP}^{n-1}$ by homogeneity). $R$ is a Morse function on $\mathbb{RP}^{n-1}$ iff $A$ has simple spectrum.
+\end{proposition}
+\begin{proof}
+Restricting the expression for the gradient of the Rayleigh Quotient, Equation (\ref{eq:RQgrad}), to $||\vec{v}||=1$,
+\begin{align*}
+\nabla_{v} R \big|_{\{||\vec{v}||=1\}} = 2A\vec{v}- 2\vec{v}\langle A\vec{v}, \vec{v} \rangle.
+\end{align*}
+Differentiating once more, the ambient Hessian on $S^{n-1}$ is,
+\begin{equation}\label{eq:RQhess}
+\nabla^2_{\vec{v}} R \big|_{S^{n-1}} = 2A - 2\langle A\vec{v},\vec{v}\rangle I_n - 4A\,\vec{v} \vec{v}^{\top}.
+\end{equation}
+Now let $\vec{v}_i$ be an eigenvector with eigenvalue $\lambda_i$. The tangent space to the sphere at $\vec v_i$ is
+\[
+T_{\vec{v}_i}S^{n-1} = \{ \vec{w}\in \mathbb{R}^n : \langle \vec{w},\vec{v}_i\rangle = 0\}.
+\]
+For $\vec{w} \in T_{\vec{v}_i}S^{n-1}$, $\vec{v}_i\vec{v}_i^{\top}\vec{w}=0$, so the last term in \eqref{eq:RQhess} vanishes. Thus the Hessian of $R$ restricted to tangent directions at $\vec v_i$ is
+\begin{equation}
+\label{eq:RQhessTS}
+\text{Hess}_{S^{n-1}} R(\vec v_i)(\vec w) = (2A - 2\lambda_i I_n)(\vec{w}), 
+\quad \vec w \in T_{\vec v_i} S^{n-1}.    
+\end{equation}
+
+\textbf{Claim 1: If $R$ is Morse then $A$ has simple spectrum.} By Proposition (\ref{prop:MorseCPs}) $R$ has at least $n$ distinct critical points; by Lemma (\ref{RayleighCPs}) each critical point $\vec{v}_i$ is an eigenvector of $A$ and so there are no more than $n$ of them. Since $R$ is Morse all of the critical points are non-degenerate $\Rightarrow$ by Equation \eqref{eq:RQhessTS}, the restriction of $2A-2\lambda_i I_n$ to $T_{v_i}S^{n-1}$ is invertible for each $i$ $\Rightarrow$ each $\lambda_i$ has algebraic multiplicity $1$, hence $A$ has simple spectrum.
+
+\textbf{Claim 2: If $A$ has simple spectrum then $R$ is Morse.} By Lemma (\ref{RayleighCPs}) each eigenvalue, $\lambda_i$ corresponds to a critical point. Since $A$ has simple spectrum each $\lambda_i$ has algebraic multiplicity $1$ $\Rightarrow$ the restriction of $2A-\lambda_i I_n$ to $T_{v_i}S^{n-1}$ is invertible for each $i$ $\Rightarrow$ each critical point of $R$ is non-degenerate. Since  $R$ is also smooth it is thus a Morse function.
+\end{proof}
+
+
+\begin{remark}[Perturbation and stability]
+Proposition~\ref{prop:MorseSS} showed that the Rayleigh quotient is Morse exactly when $A$ has simple spectrum. What if $A$ has repeated eigenvalues?  
+In that case $R$ fails to be Morse, but only in a fragile way: a tiny perturbation of $A$ makes the spectrum simple, hence $R$ Morse. Concretely, if we add a small diagonal matrix $B=\operatorname{diag}(1,2,\dots,n)$ and consider
+\[
+   A_\varepsilon = A + \varepsilon B ,
+\]
+then for all but finitely many values of $\varepsilon$, the perturbed matrix $A_\varepsilon$ has distinct eigenvalues. In this sense the Morse property is generic: it holds after an arbitrarily small perturbation.
+\end{remark}
+
+\begin{remark}[Analogy with widths]
+This robustness under perturbation mirrors the role of topology in min–max problems.  
+Linear subspaces are unstable objects: a small change in $A$ can rotate the minimising subspace dramatically. By contrast, homology classes are stable: a $1$-cycle cannot suddenly vanish under small perturbations of the space.  
+Thus eigenvalues behave like \textbf{widths}: critical levels forced not by linear algebra but by the existence of cycles. The mountain–pass analogy becomes exact - just as a family of loops sweeping out a nontrivial cycle must cross a ridge, a $k$-parameter family in $\mathbb{RP}^{n-1}$ must cross the $k$-th eigenvalue level.  
+This perspective prepares us for the planar width construction, where we exploit precisely these two features:  
+\begin{itemize}
+    \item \textbf{Unavoidable critical values} coming from cycles,  
+    \item \textbf{Stability under perturbation} to smooth out rigid or singular sweep-outs.  
+\end{itemize}
+\noindent\emph{Takeaway.} Eigenvalues are a prototype of “widths”: min--max levels forced by topology and stable under small perturbations. In the next section we make this analogy precise with planar widths.
+\end{remark}
+
+
