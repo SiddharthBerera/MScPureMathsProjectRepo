@@ -80,8 +80,7 @@ MscPureMathsProjectRepo/
 │ │
 │ └── setup.py
 │
-├── figures/ # Figures used in the dissertation (optional)
-├── thesis/ # LaTeX sources of the MSc dissertation
+├── thesis/ # the MSc dissertation
 └── README.md
 
 
