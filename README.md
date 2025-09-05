@@ -55,7 +55,7 @@ MscPureMathsProjectRepo/
 │ │ ├── domain.py
 │ │ └── planar_domains.py
 │ │
-│ ├── examples/ # Example scripts and demos
+│ ├── examples/ # Domains for computing the allen--cahn energy on, the p-parameter min--max solutions would then correspond to the p-widths on this domain - We did not implement the min--maxing
 │ │ ├── init.py
 │ │ ├── demo.py
 │ │ └── square_mesh.py
