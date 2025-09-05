@@ -81,7 +81,9 @@ MscPureMathsProjectRepo/
 │ │
 │ └── setup.py
 │
-├── Thesis/ # the MSc dissertation
+├── Thesis/ # latex code for written dissertation
+|
+├── Berera_Siddharth_01858742.pdf # Final submitted version of written dissertation in pdf format
 └── README.md
 ```
 ## 📊 Example Visualisations
