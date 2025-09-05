@@ -5,12 +5,12 @@ This repository contains the code and computations accompanying my MSc dissertat
 Widths and Connections to the Allen–Cahn PDE”* at Imperial College London, supervised by Professor Marco A. M. Guaraco.  
 The project develops a unified **min–max framework** connecting:
 
-- Linear spectral theory (min–max construction of eigenvalues)  
+- Linear spectral theory (min--max construction of eigenvalues)  
 - Geometric widths (nonlinear analogues of eigenvalues for length/volume functionals)  
-- Nonlinear PDEs (Allen–Cahn equation and variational solutions)  
+- The Allen--Cahn variational PDE and its min--max solutions
 
-Programs for numerical implementation via Finite Element Methods (FEM) and visualising the results are included for two problems:
-1) Minimal Surface Evolution via the Area Functional (pythonSurfaceEvolver)
+This repo contains the programs mentioned in my dissertation for numerical implementation via Finite Element Methods (FEM)  two problems:
+1) Minimal Surface Evolution via the Area Functional (minimal_surface_evolver)
 2) Planar Width Exploration via the Allen--Cahn Energy (allen_cahn_pde_solver)
 
 ---
