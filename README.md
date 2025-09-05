@@ -34,4 +34,54 @@ cd MScPureMathsProjectRepo
 ---
 
 ## 📂 Repository Structure
+MscPureMathsProjectRepo/
+│
+├── allen_cahn_pde_solver/ # Allen–Cahn PDE solver (Finite Element implementation)
+│ ├── core/ # Core solver modules
+│ │ ├── energy/ # Energy functional + Allen–Cahn definition
+│ │ │ ├── init.py
+│ │ │ └── allen_cahn.py
+│ │ │
+│ │ ├── fem/ # Finite Element Method routines
+│ │ │ ├── init.py
+│ │ │ ├── barycentric.py
+│ │ │ ├── gradient.py
+│ │ │ ├── hessian_dense.py
+│ │ │ ├── hessian_sparse.py
+│ │ │ └── torch_assembly.py
+│ │ │
+│ │ └── geometry/ # Domain and geometry definitions
+│ │ ├── init.py
+│ │ ├── domain.py
+│ │ └── planar_domains.py
+│ │
+│ ├── examples/ # Example scripts and demos
+│ │ ├── init.py
+│ │ ├── demo.py
+│ │ └── square_mesh.py
+│ │
+│ ├── comparison.py # Benchmarking sparse vs dense Hessian methods
+│ ├── setup.py # Packaging/setup script
+│ └── allen_cahn_pde_solver.egg-info/
+│
+├── surface_evolver/ # Minimal surface evolution via area functional
+│ ├── core/ # Core routines for curve/surface evolution
+│ │ ├── evolver.py
+│ │ ├── mesh_utils.py
+│ │ └── gradient_descent.py
+│ │
+│ ├── examples/ # Example runs / test cases
+│ │ ├── circle_domain.py
+│ │ └── polygon_domain.py
+│ │
+│ ├── visualization/ # Plotting and interactive tools
+│ │ ├── plot_utils.py
+│ │ └── animate.py
+│ │
+│ └── setup.py
+│
+├── figures/ # Figures used in the dissertation (optional)
+├── thesis/ # LaTeX sources of the MSc dissertation
+└── README.md
+
 
