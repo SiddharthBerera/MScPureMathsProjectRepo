@@ -81,7 +81,7 @@ MscPureMathsProjectRepo/
 │ │
 │ └── setup.py
 │
-├── thesis/ # the MSc dissertation
+├── Thesis/ # the MSc dissertation
 └── README.md
 ```
 ## 📊 Example Visualisations
