@@ -89,7 +89,6 @@ The following figures illustrate one of the meshes created for discretising surf
 These outputs demonstrate the convergence of triangulated surfaces toward minimal configurations under the area functional.
    ![Surface after Gradient Descent (example 1)](Thesis/figures/img1.png)
    ![Surface after Gradient Descent (example 2)](Thesis/figures/img2.png)
-</p>
 
 - **Red points:** vertices in the evolving mesh  
 - **Green points:** fixed boundary vertices  
