@@ -86,8 +86,7 @@ MscPureMathsProjectRepo/
 ```
 ## 📊 Example Visualisations
 
-The following figures illustrate one of the meshes created for discretising surfaces, and its configuration after evolution toward a local minimum of the area functional.  
-These outputs demonstrate the convergence of triangulated surfaces toward minimal configurations under the area functional.
+The following figures illustrate one of the meshes created for discretising surfaces, and its configuration after evolution toward a local minimum of the area functional. These outputs demonstrate the convergence of triangulated surfaces toward minimal configurations under the area functional.
 
 <p align="center">
   <img src="Thesis/figures/img1.png" alt="Surface after Gradient Descent (example 1)" width="400"/>
