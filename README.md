@@ -2,7 +2,7 @@
 
 ## 📖 Overview
 This repository contains the code and computations accompanying my MSc dissertation *“Min–Max Methods for Computing Planar
-Widths and Connections to the Allen–Cahn PDE”* at Imperial College London, supervised by Professor Marco Guaraco.  
+Widths and Connections to the Allen–Cahn PDE”* at Imperial College London, supervised by Professor Marco A. M. Guaraco.  
 The project develops a unified **min–max framework** connecting:
 
 - Linear spectral theory (min–max construction of eigenvalues)  
