@@ -28,21 +28,10 @@ This repo includes numerical implementations (via Finite Element Methods, FEM) f
 ## Quick Start
 Clone:
 ```bash
-git clone https://github.com/SiddharthBerera/SurfaceEvolverDiss.git
-cd SurfaceEvolverDiss
+git clone https://github.com/SiddharthBerera/MScPureMathsProjectRepo.git
+cd MScPureMathsProjectRepo
 
 ---
 
 ## 📂 Repository Structure
-- **`/src/`** — core Python/C++ code for surface evolver–style computations  
-- **`/figures/`** — generated figures used in the dissertation  
-- **`/notebooks/`** — Jupyter notebooks with experiments, PDE solvers, and visualisations  
-- **`/thesis/`** — LaTeX source of the dissertation  
 
----
-
-## ⚙️ Installation
-Clone the repository:
-```bash
-git clone https://github.com/SiddharthBerera/SurfaceEvolverDiss.git
-cd SurfaceEvolverDiss
