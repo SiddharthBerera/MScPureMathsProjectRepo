@@ -9,11 +9,7 @@ The project develops a unified **min–max** framework connecting:
 - **Linear spectral theory**: min--max construction of eigenvalues  
 - **Geometric widths**: nonlinear analogues of eigenvalues for length/volume functionals  
 - **Allen–Cahn PDE**: variational formulation and min–max solutions
-
-- Linear spectral theory (min--max construction of eigenvalues)  
-- Geometric widths (nonlinear analogues of eigenvalues for length/volume functionals)  
-- The Allen--Cahn variational PDE and its min--max solutions
-
+- 
 ## Contents
 This repo includes numerical implementations (via Finite Element Methods, FEM) for two problems:
 
